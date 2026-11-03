@@ -65,18 +65,18 @@
       <div class="personal-grid">
         <label class="text-field">
           <span>Nombres <span class="asterisk">*</span></span>
-          <input name="nombres" type="text" autocomplete="given-name" placeholder="Tus nombres" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
+          <input name="nombres" type="text" autocomplete="given-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
         </label>
         <label class="text-field">
           <span>Apellidos <span class="asterisk">*</span></span>
-          <input name="apellidos" type="text" autocomplete="family-name" placeholder="Tus apellidos" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
+          <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
         </label>
-        <fieldset class="birthdate-field full-width" aria-describedby="birthdate-help birthdate-error">
+        <fieldset class="birthdate-field" aria-describedby="birthdate-help birthdate-error">
           <legend>Fecha de nacimiento <span class="asterisk">*</span></legend>
           <div class="birthdate-parts">
-            <label class="text-field"><span>Día</span><input name="birth_day" type="text" inputmode="numeric" autocomplete="bday-day" maxlength="2" pattern="[0-9]{1,2}" placeholder="DD" required></label>
+            <label class="text-field"><span>Día</span><input name="birth_day" type="text" inputmode="numeric" autocomplete="bday-day" maxlength="2" pattern="[0-9]{1,2}" placeholder="Día" required></label>
             <label class="text-field"><span>Mes</span><select name="birth_month" autocomplete="bday-month" required><option value="" selected disabled>Mes</option><option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option><option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option><option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option><option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option></select></label>
-            <label class="text-field"><span>Año</span><input name="birth_year" type="text" inputmode="numeric" autocomplete="bday-year" maxlength="4" pattern="[1-9][0-9]{3}" placeholder="AAAA" required></label>
+            <label class="text-field"><span>Año</span><input name="birth_year" type="text" inputmode="numeric" autocomplete="bday-year" maxlength="4" pattern="[1-9][0-9]{3}" placeholder="Año" required></label>
           </div>
           <input name="fecha_nacimiento" type="hidden">
           <small class="field-hint" id="birthdate-help">Debes tener 18 años o más</small>
