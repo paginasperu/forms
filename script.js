@@ -139,6 +139,8 @@ availabilityInputs.forEach(input => {
 
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
+  validateAdultAge();
+  if (!applicationForm.reportValidity()) return;
   if (!updateAvailabilityValidation(true)) {
     availabilityInputs[0].focus();
     return;
@@ -174,8 +176,8 @@ applicationForm.addEventListener('submit', async event => {
 
   submitButton.disabled = true;
   submitButton.setAttribute('aria-busy', 'true');
-  submitButton.textContent = 'Preparando…';
-  status.textContent = 'Preparando tus archivos…';
+  submitButton.textContent = 'Enviando…';
+  status.textContent = 'Enviando tu postulación…';
 
   try {
     const payload = {
@@ -267,6 +269,8 @@ function submitPayload(payload) {
     cleanup();
     if (message.ok) {
       applicationForm.reset();
+      birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
+      birthDateError.hidden = true;
       document.querySelectorAll('.file-status').forEach(item => { item.textContent = ''; });
       availabilityTouched = false;
       updateAvailabilityValidation(false);
@@ -325,27 +329,51 @@ privacyLink.addEventListener('click', event => {
 });
 
 const birthDate = document.querySelector('[name="fecha_nacimiento"]');
-const today = new Date();
-const pad = value => String(value).padStart(2, '0');
-const adultCutoff = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-birthDate.max = `${adultCutoff.getFullYear()}-${pad(adultCutoff.getMonth() + 1)}-${pad(adultCutoff.getDate())}`;
+const birthParts = ['birth_day', 'birth_month', 'birth_year'].map(name => applicationForm.elements[name]);
 const birthDateError = document.getElementById('birthdate-error');
 
-function validateAdultAge() {
-  if (!birthDate.value) {
-    birthDate.setCustomValidity('');
-    birthDateError.textContent = '';
-    birthDateError.hidden = true;
-    return;
-  }
-
-  const selectedDate = new Date(`${birthDate.value}T00:00:00`);
-  const isAdult = selectedDate <= adultCutoff && selectedDate <= today;
-  const message = 'Para postular, debes tener 18 años cumplidos.';
-  birthDate.setCustomValidity(isAdult ? '' : message);
-  birthDateError.textContent = isAdult ? '' : message;
-  birthDateError.hidden = isAdult;
+function birthDateResult(dayText, monthText, yearText, today = new Date()) {
+  if (!dayText || !monthText || !yearText) return { error: 'Completa el día, mes y año de nacimiento' };
+  if (!/^[1-9][0-9]{3}$/.test(yearText)) return { error: 'Escribe el año completo con cuatro cifras, sin ceros al inicio' };
+  if (!/^\d{1,2}$/.test(dayText) || !/^\d{1,2}$/.test(monthText)) return { error: 'Revisa el día y el mes de nacimiento' };
+  const day = Number(dayText), month = Number(monthText), year = Number(yearText);
+  const date = new Date(0);
+  date.setFullYear(year, month - 1, day);
+  date.setHours(0, 0, 0, 0);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return { error: 'La fecha no existe. Revisa el día, mes y año' };
+  let age = today.getFullYear() - year;
+  if (today.getMonth() + 1 < month || (today.getMonth() + 1 === month && today.getDate() < day)) age--;
+  if (age < 18) return { error: 'Para postular, debes tener 18 años cumplidos' };
+  return { value: `${yearText}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}` };
 }
 
-birthDate.addEventListener('input', validateAdultAge);
-birthDate.addEventListener('change', validateAdultAge);
+function validateAdultAge(showError = true) {
+  birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
+  const result = birthDateResult(...birthParts.map(input => input.value.trim()));
+  birthDate.value = result.value || '';
+  const message = result.error || '';
+  if (message) {
+    const target = birthParts.find(input => !input.value) || birthParts[2];
+    target.setCustomValidity(message);
+    if (showError) target.setAttribute('aria-invalid', 'true');
+  }
+  birthDateError.textContent = showError ? message : '';
+  birthDateError.hidden = !showError || !message;
+  return !message;
+}
+
+birthParts.forEach(input => {
+  input.addEventListener('input', () => {
+    if (input.tagName === 'INPUT') input.value = input.value.replace(/\D/g, '');
+    validateAdultAge(birthParts.every(part => part.value));
+  });
+  input.addEventListener('change', () => validateAdultAge(birthParts.every(part => part.value)));
+});
+
+const photoExampleToggle = document.getElementById('photo-example-toggle');
+const photoExample = document.getElementById('photo-example');
+photoExampleToggle.addEventListener('click', () => {
+  photoExample.hidden = !photoExample.hidden;
+  photoExampleToggle.setAttribute('aria-expanded', String(!photoExample.hidden));
+  photoExampleToggle.textContent = photoExample.hidden ? 'Ver ejemplo' : 'Ocultar ejemplo';
+});

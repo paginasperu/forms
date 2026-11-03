@@ -44,7 +44,7 @@ h1, h2, h3, p { margin-top: 0; }
 .availability-header { min-height: 34px; background: #f8f9fb; }
 .availability-header > span { min-height: 34px; color: #778195; font-size: 10px; font-weight: 600; }
 .availability-row input[type="checkbox"], .interview-choice input[type="checkbox"], .privacy-choice input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: var(--blue); cursor: pointer; }
-.interview-choice { display: flex; align-items: flex-start; gap: 10px; max-width: 100%; color: #394456; font-size: 13px; line-height: 1.5; cursor: pointer; }
+.interview-choice { margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; max-width: 100%; color: #394456; font-size: 13px; line-height: 1.5; cursor: pointer; }
 .interview-choice input { flex: 0 0 auto; margin-top: 2px !important; }
 .privacy-choice { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; color: #394456; font-size: 13px; line-height: 1.5; cursor: pointer; }
 .privacy-choice input { flex: 0 0 auto; margin-top: 2px; }
@@ -117,3 +117,47 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01ms !important; } }
+
+/* Ajustes de legibilidad y distribución aprobados */
+.upload-card { grid-template-rows: 34px auto auto auto; align-content: start; }
+.text-field { min-width: 0; font-size: 14px; }
+.text-field input, .text-field select { min-width: 0; font-size: 16px; }
+.text-field input::placeholder, .text-field select:invalid { color: #687386; }
+.field-hint, .file-hint, .optional { color: #586579; font-size: 12px; }
+.field-error { color: #a72935; }
+.section-title { font-size: 13px; }
+.availability-row .day-label { font-size: 13px; }
+.availability-header > span { color: #586579; font-size: 12px; }
+.interview-choice, .privacy-choice { font-size: 14px; }
+.file-status { font-size: 12px; text-align: left; }
+.file-picker { font-size: 13px; }
+.full-width { grid-column: 1 / -1; }
+.birthdate-field { min-width: 0; border: 0; padding: 0; margin: 0; }
+.birthdate-field legend { padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+.birthdate-parts { display: grid; grid-template-columns: minmax(54px, .7fr) minmax(120px, 1.6fr) minmax(75px, 1fr); gap: 10px; }
+.birthdate-parts .text-field > span { font-size: 12px; color: #586579; }
+.birthdate-field > small { display: block; margin-top: 6px; }
+.birthdate-field > small[hidden] { display: none; }
+.example-link { grid-column: 1 / -1; grid-row: 4; justify-self: start; border: 0; background: none; padding: 2px 0; color: #175dc4; text-decoration: underline; text-underline-offset: 2px; font: 500 12px 'DM Sans', sans-serif; cursor: pointer; }
+.example-link:focus-visible { outline: 2px solid #175dc4; outline-offset: 3px; }
+.photo-example { margin: 14px 0 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; text-align: center; }
+.photo-example img { display: block; width: min(100%, 240px); height: auto; margin: 0 auto; border-radius: 6px; }
+.photo-example figcaption { margin-top: 8px; font-size: 12px; color: #586579; }
+@media (max-width: 600px) {
+  .personal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mobile-wide { grid-column: 1 / -1; }
+  .upload-card { grid-template-columns: 27px auto minmax(0, 1fr); }
+  .file-picker { min-width: 0; padding: 0 5px; font-size: 12px; }
+  .file-hint { font-size: 12px; }
+  .availability-row .day-label { font-size: 13px; }
+  .availability-header > span { font-size: 12px; }
+}
+@media (max-width: 359px) {
+  .upload-card { grid-template-columns: 30px 1fr; }
+  .file-picker { grid-column: 1 / -1; grid-row: 2; }
+  .file-hint { grid-row: 3; }
+  .file-status { grid-row: 4; }
+  .example-link { grid-row: 5; }
+  .birthdate-parts { grid-template-columns: 50px minmax(90px, 1fr) 70px; gap: 6px; }
+  .birthdate-parts input, .birthdate-parts select { padding: 0 8px; }
+}
