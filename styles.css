@@ -133,9 +133,9 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .file-picker { font-size: 13px; }
 .full-width { grid-column: 1 / -1; }
 .birthdate-field { min-width: 0; border: 0; padding: 0; margin: 0; }
-.birthdate-field legend { padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+.birthdate-field legend { padding: 0; margin-bottom: 7px; font-size: 14px; font-weight: 600; }
 .birthdate-parts { display: grid; grid-template-columns: minmax(54px, .7fr) minmax(120px, 1.6fr) minmax(75px, 1fr); gap: 10px; }
-.birthdate-parts .text-field > span { font-size: 12px; color: #586579; }
+.birthdate-parts .text-field > span { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .birthdate-field > small { display: block; margin-top: 6px; }
 .birthdate-field > small[hidden] { display: none; }
 .example-link { grid-column: 1 / -1; grid-row: 4; justify-self: start; border: 0; background: none; padding: 2px 0; color: #175dc4; text-decoration: none; font: 500 12px 'DM Sans', sans-serif; cursor: pointer; }

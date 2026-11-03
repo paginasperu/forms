@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
   <title>Postulación de promotora | OFICIAL</title>
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../styles.css?v=9e3486b27f56">
 </head>
 <body>
   <header class="topbar">
@@ -152,8 +152,9 @@
         </label>
         <label class="text-field mobile-wide">
           <span>Portafolio <span class="optional">Opcional</span></span>
-          <input name="portafolio" type="url" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a tu perfil de una red social.">
+          <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-error" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a tu perfil de una red social.">
           <small class="field-hint">Enlace a una red social</small>
+          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
         </label>
       </div>
 
@@ -233,6 +234,6 @@
     </form>
     <iframe class="submission-frame" id="submission-frame" name="submission-frame" title="Resultado del envío" aria-hidden="true" tabindex="-1"></iframe>
   </main>
-  <script src="../script.js"></script>
+  <script src="../script.js?v=0cf04a19c124"></script>
 </body>
 </html>

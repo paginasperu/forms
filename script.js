@@ -112,11 +112,28 @@ whatsapp.addEventListener('input', () => {
 });
 
 const portfolio = document.querySelector('[name="portafolio"]');
+const portfolioError = document.getElementById('portfolio-error');
+function validatePortfolio() {
+  const value = portfolio.value.trim();
+  portfolio.value = value;
+  const valid = !value || (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
+  const message = valid ? '' : 'Introduce un enlace completo a una web o red social';
+  portfolio.setCustomValidity(message);
+  portfolioError.textContent = message;
+  portfolioError.hidden = valid;
+  if (valid) portfolio.removeAttribute('aria-invalid');
+  else portfolio.setAttribute('aria-invalid', 'true');
+  return valid;
+}
+portfolio.addEventListener('input', () => {
+  portfolio.setCustomValidity('');
+  portfolioError.hidden = true;
+  portfolio.removeAttribute('aria-invalid');
+});
 portfolio.addEventListener('blur', () => {
   const value = portfolio.value.trim();
-  if (value && !/^https?:\/\//i.test(value)) {
-    portfolio.value = `https://${value}`;
-  }
+  if (value && !/^https?:\/\//i.test(value)) portfolio.value = `https://${value}`;
+  validatePortfolio();
 });
 
 const applicationForm = document.getElementById('application-form');
@@ -140,6 +157,7 @@ availabilityInputs.forEach(input => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
+  validatePortfolio();
   if (!applicationForm.reportValidity()) return;
   if (!updateAvailabilityValidation(true)) {
     availabilityInputs[0].focus();
@@ -271,6 +289,9 @@ function submitPayload(payload) {
       applicationForm.reset();
       birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
       birthDateError.hidden = true;
+      portfolio.setCustomValidity('');
+      portfolioError.hidden = true;
+      portfolio.removeAttribute('aria-invalid');
       document.querySelectorAll('.file-status').forEach(item => { item.textContent = ''; });
       availabilityTouched = false;
       updateAvailabilityValidation(false);
@@ -294,7 +315,7 @@ function submitPayload(payload) {
       status.textContent = `${errorMessages[code] || 'El receptor devolvió un error inesperado'}. Referencia: ${code}`;
       status.classList.add('error');
       submitButton.removeAttribute('aria-busy');
-    submitButton.disabled = false;
+      submitButton.disabled = false;
       submitButton.textContent = 'Enviar postulación';
     }
   }
