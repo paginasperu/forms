@@ -309,6 +309,8 @@ function submitPayload(payload) {
         SHEET_NOT_READY: 'No se encontró la pestaña configurada en Google Sheets',
         SHEET_HEADERS_MISMATCH: 'Las columnas de Google Sheets no coinciden con la configuración',
         STORAGE_NOT_PRIVATE: 'La configuración de acceso de la hoja o carpeta no coincide con la requerida',
+        RECORD_IDS_INVALID: 'La numeración de registros necesita revisión del responsable',
+        ID_STATE_INVALID: 'No se pudo asignar el número de postulación',
         SERVER_ERROR: 'Ocurrió un error interno en Apps Script'
       };
       const code = Object.hasOwn(errorMessages, message.code) ? message.code : 'UNKNOWN_ERROR';
@@ -397,4 +399,71 @@ photoExampleToggle.addEventListener('click', () => {
   photoExample.hidden = !photoExample.hidden;
   photoExampleToggle.setAttribute('aria-expanded', String(!photoExample.hidden));
   photoExampleToggle.textContent = photoExample.hidden ? 'Ver ejemplo' : 'Ocultar ejemplo';
+});
+
+const cvInput = document.getElementById('cv-file');
+const cvHelpToggle = document.getElementById('cv-help-toggle');
+const cvHelp = document.getElementById('cv-picker-help');
+const cvHelpStatus = document.getElementById('cv-help-status');
+const cvAcceptedTypes = cvInput.accept;
+let bypassDocumentPicker = false;
+let documentPickerAvailable = typeof window.showOpenFilePicker === 'function';
+
+function showCvHelp() {
+  cvHelp.hidden = false;
+  cvHelpToggle.setAttribute('aria-expanded', 'true');
+}
+function restoreCvFilter() {
+  cvInput.accept = cvAcceptedTypes;
+}
+cvHelpToggle.addEventListener('click', () => {
+  cvHelp.hidden = !cvHelp.hidden;
+  cvHelpToggle.setAttribute('aria-expanded', String(!cvHelp.hidden));
+});
+cvInput.addEventListener('click', async event => {
+  if (bypassDocumentPicker || !documentPickerAvailable) return;
+  event.preventDefault();
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      id: 'cv-postulacion',
+      startIn: 'documents',
+      types: [{ description: 'Currículum en PDF', accept: { 'application/pdf': ['.pdf'] } }],
+      excludeAcceptAllOption: true,
+      multiple: false
+    });
+    if (!handle) return;
+    const file = await handle.getFile();
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    cvInput.files = transfer.files;
+    cvInput.dispatchEvent(new Event('change', { bubbles: true }));
+  } catch (error) {
+    if (error.name === 'AbortError') return;
+    documentPickerAvailable = false;
+    showCvHelp();
+    cvHelpStatus.hidden = false;
+    cvHelpStatus.textContent = 'Usa «Buscar en archivos» para abrir el selector alternativo';
+  }
+});
+document.getElementById('cv-browse-files').addEventListener('click', () => {
+  // Esta alternativa cambia solo el selector; la validación sigue exigiendo PDF.
+  cvInput.removeAttribute('accept');
+  bypassDocumentPicker = true;
+  try { cvInput.click(); }
+  finally { bypassDocumentPicker = false; }
+});
+cvInput.addEventListener('change', restoreCvFilter);
+cvInput.addEventListener('cancel', restoreCvFilter);
+window.addEventListener('focus', () => {
+  if (!cvInput.hasAttribute('accept')) window.setTimeout(restoreCvFilter, 500);
+});
+document.getElementById('cv-copy-link').addEventListener('click', async () => {
+  cvHelpStatus.hidden = false;
+  const link = 'https://forms.oficial.pe/promotoras/';
+  try {
+    await navigator.clipboard.writeText(link);
+    cvHelpStatus.textContent = 'Enlace copiado. Pégalo en Chrome o Safari';
+  } catch (_) {
+    cvHelpStatus.textContent = `Copia esta dirección y ábrela en Chrome o Safari: ${link}`;
+  }
 });

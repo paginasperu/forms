@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
   <title>Postulación de promotora | OFICIAL</title>
-  <link rel="stylesheet" href="../styles.css?v=9e3486b27f56">
+  <link rel="stylesheet" href="../styles.css?v=68124d2d0faf">
 </head>
 <body>
   <header class="topbar">
@@ -35,6 +35,7 @@
           </label>
           <p class="file-hint">PDF · Hasta 2 MB</p>
           <p class="file-status" id="cv-status" aria-live="polite"></p>
+          <button class="example-link" id="cv-help-toggle" type="button" aria-expanded="false" aria-controls="cv-picker-help">¿No aparece tu PDF?</button>
         </section>
 
         <section class="upload-card" aria-labelledby="photo-title">
@@ -54,6 +55,14 @@
           <p class="file-status" id="photo-status" aria-live="polite"></p>
           <button class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver ejemplo</button>
         </section>
+      </div>
+
+      <div class="file-help" id="cv-picker-help" hidden>
+        <p>Prueba el selector alternativo para buscar tu PDF entre los archivos del celular</p>
+        <button class="help-button" id="cv-browse-files" type="button">Buscar en archivos</button>
+        <p>Si solo aparece la galería dentro de WhatsApp o Instagram, abre este formulario en Chrome o Safari</p>
+        <button class="help-button" id="cv-copy-link" type="button">Copiar enlace</button>
+        <p id="cv-help-status" role="status" aria-live="polite" hidden></p>
       </div>
 
       <figure class="photo-example" id="photo-example" hidden>
@@ -234,6 +243,6 @@
     </form>
     <iframe class="submission-frame" id="submission-frame" name="submission-frame" title="Resultado del envío" aria-hidden="true" tabindex="-1"></iframe>
   </main>
-  <script src="../script.js?v=0cf04a19c124"></script>
+  <script src="../script.js?v=1a3c0c6d95e5"></script>
 </body>
 </html>
