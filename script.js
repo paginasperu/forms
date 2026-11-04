@@ -111,29 +111,34 @@ whatsapp.addEventListener('input', () => {
   whatsapp.setSelectionRange(position, position);
 });
 
-const portfolio = document.querySelector('[name="portafolio"]');
-const portfolioError = document.getElementById('portfolio-error');
-function validatePortfolio() {
-  const value = portfolio.value.trim();
-  portfolio.value = value;
+const socialLink = document.querySelector('[name="red_social"]');
+const socialError = document.getElementById('social-error');
+function validateSocialLink() {
+  const value = socialLink.value.trim();
+  socialLink.value = value;
   const valid = !value || (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
   const message = valid ? '' : 'Introduce un enlace completo a una web o red social';
-  portfolio.setCustomValidity(message);
-  portfolioError.textContent = message;
-  portfolioError.hidden = valid;
-  if (valid) portfolio.removeAttribute('aria-invalid');
-  else portfolio.setAttribute('aria-invalid', 'true');
+  socialLink.setCustomValidity(message);
+  socialError.textContent = message;
+  socialError.hidden = valid;
+  if (valid) socialLink.removeAttribute('aria-invalid');
+  else socialLink.setAttribute('aria-invalid', 'true');
   return valid;
 }
-portfolio.addEventListener('input', () => {
-  portfolio.setCustomValidity('');
-  portfolioError.hidden = true;
-  portfolio.removeAttribute('aria-invalid');
+socialLink.addEventListener('input', () => {
+  socialLink.setCustomValidity('');
+  socialError.hidden = true;
+  socialLink.removeAttribute('aria-invalid');
 });
-portfolio.addEventListener('blur', () => {
-  const value = portfolio.value.trim();
-  if (value && !/^https?:\/\//i.test(value)) portfolio.value = `https://${value}`;
-  validatePortfolio();
+socialLink.addEventListener('blur', () => {
+  const value = socialLink.value.trim();
+  if (value && !/^https?:\/\//i.test(value)) socialLink.value = `https://${value}`;
+  validateSocialLink();
+});
+
+const presentation = document.querySelector('[name="presentacion"]');
+presentation.addEventListener('input', () => {
+  presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación.');
 });
 
 const applicationForm = document.getElementById('application-form');
@@ -157,7 +162,7 @@ availabilityInputs.forEach(input => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
-  validatePortfolio();
+  validateSocialLink();
   if (!applicationForm.reportValidity()) return;
   if (!updateAvailabilityValidation(true)) {
     availabilityInputs[0].focus();
@@ -208,7 +213,8 @@ applicationForm.addEventListener('submit', async event => {
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
       distrito: applicationForm.elements.distrito.value,
       whatsapp: applicationForm.elements.whatsapp.value,
-      portafolio: applicationForm.elements.portafolio.value.trim(),
+      red_social: applicationForm.elements.red_social.value.trim(),
+      presentacion: applicationForm.elements.presentacion.value.trim(),
       horarios_disponibles: availabilityInputs.filter(input => input.checked).map(input => input.value),
       acepta_entrevista: applicationForm.elements.acepta_entrevista.checked,
       acepta_politica_privacidad: applicationForm.elements.acepta_politica_privacidad.checked,
@@ -289,9 +295,9 @@ function submitPayload(payload) {
       applicationForm.reset();
       birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
       birthDateError.hidden = true;
-      portfolio.setCustomValidity('');
-      portfolioError.hidden = true;
-      portfolio.removeAttribute('aria-invalid');
+      socialLink.setCustomValidity('');
+      socialError.hidden = true;
+      socialLink.removeAttribute('aria-invalid');
       document.querySelectorAll('.file-status').forEach(item => { item.textContent = ''; });
       availabilityTouched = false;
       updateAvailabilityValidation(false);

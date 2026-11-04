@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
   <title>Postulación de promotora | OFICIAL</title>
-  <link rel="stylesheet" href="../styles.css?v=6986e687b1d1">
+  <link rel="stylesheet" href="../styles.css?v=713791d6e966">
 </head>
 <body>
   <header class="topbar">
@@ -50,7 +50,7 @@
             <span class="picker-label">Subir</span>
             <input id="photo-file" name="foto" type="file" accept=".jpg,.jpeg,.jfif,.png,image/jpeg,image/png" required>
           </label>
-          <p class="file-hint">Solo 1 foto · JPG, JPEG, JFIF o PNG · Hasta 1 MB</p>
+          <p class="file-hint">Solo 1 foto · JPG o PNG · Hasta 1 MB</p>
           <p class="file-status" id="photo-status" aria-live="polite"></p>
           <button class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver ejemplo</button>
         </section>
@@ -71,7 +71,7 @@
           <span>Apellidos <span class="asterisk">*</span></span>
           <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
         </label>
-        <fieldset class="birthdate-field" aria-describedby="birthdate-help birthdate-error">
+        <fieldset class="birthdate-field" aria-describedby="birthdate-error">
           <legend>Fecha de nacimiento <span class="asterisk">*</span></legend>
           <div class="birthdate-parts">
             <label class="text-field"><span>Día</span><input name="birth_day" type="text" inputmode="numeric" autocomplete="bday-day" maxlength="2" pattern="[0-9]{1,2}" placeholder="Día" required></label>
@@ -79,7 +79,6 @@
             <label class="text-field"><span>Año</span><input name="birth_year" type="text" inputmode="numeric" autocomplete="bday-year" maxlength="4" pattern="[1-9][0-9]{3}" placeholder="Año" required></label>
           </div>
           <input name="fecha_nacimiento" type="hidden">
-          <small class="field-hint" id="birthdate-help">Debes tener 18 años o más</small>
           <small class="field-hint field-error" id="birthdate-error" aria-live="polite" hidden></small>
         </fieldset>
         <label class="text-field mobile-wide">
@@ -151,10 +150,17 @@
           <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" minlength="11" maxlength="11" required>
         </label>
         <label class="text-field mobile-wide">
-          <span>Portafolio <span class="optional">Opcional</span></span>
-          <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-error" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a tu perfil de una red social.">
-          <small class="field-hint">Enlace a una red social</small>
-          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
+          <span>Red social <span class="optional">Opcional</span></span>
+          <input name="red_social" type="url" maxlength="2048" aria-describedby="social-error" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a tu perfil de una red social.">
+          <small class="field-hint field-error" id="social-error" aria-live="polite" hidden></small>
+        </label>
+      </div>
+
+      <h2 class="section-title personal-title" id="presentation-title">Presentación <span class="asterisk" aria-hidden="true">*</span></h2>
+      <div class="personal-grid">
+        <label class="text-field mobile-wide">
+          <textarea name="presentacion" rows="3" maxlength="300" aria-labelledby="presentation-title" aria-describedby="presentation-help" required></textarea>
+          <small class="field-hint" id="presentation-help">Describe brevemente lo que te hace diferente</small>
         </label>
       </div>
 
@@ -217,7 +223,7 @@
         <div class="privacy-copy">
           <p><strong>Responsable:</strong> José Luis Muro Porras, responsable de la agencia de publicidad OFICIAL.</p>
           <p><strong>Finalidad:</strong> usar tus datos para evaluar esta postulación, verificar que tengas 18 años o más, contactarte y coordinar una entrevista. No usaremos tu información para publicar un perfil en el directorio.</p>
-          <p><strong>Datos solicitados:</strong> nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, portafolio, disponibilidad, CV y una foto.</p>
+          <p><strong>Datos solicitados:</strong> nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, red social, presentación, disponibilidad, CV y una foto.</p>
           <p><strong>Almacenamiento y acceso:</strong> las respuestas y archivos se guardarán en Google Sheets y Google Drive. El acceso se limitará a las personas autorizadas para gestionar la selección.</p>
           <p><strong>Conservación:</strong> guardaremos la información durante la evaluación y la eliminaremos cuando deje de ser necesaria para gestionar esta convocatoria, salvo que exista una obligación legal.</p>
           <p>Puedes solicitar acceso, rectificación o eliminación, u oponerte al uso de tus datos, escribiendo al WhatsApp <a href="https://wa.me/51950141414" target="_blank" rel="noopener noreferrer">950 141 414</a>.</p>
@@ -234,6 +240,6 @@
     </form>
     <iframe class="submission-frame" id="submission-frame" name="submission-frame" title="Resultado del envío" aria-hidden="true" tabindex="-1"></iframe>
   </main>
-  <script src="../script.js?v=76918b1a92b7"></script>
+  <script src="../script.js?v=73dc4232650f"></script>
 </body>
 </html>
