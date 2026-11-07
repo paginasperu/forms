@@ -404,5 +404,5 @@ const photoExample = document.getElementById('photo-example');
 photoExampleToggle.addEventListener('click', () => {
   photoExample.hidden = !photoExample.hidden;
   photoExampleToggle.setAttribute('aria-expanded', String(!photoExample.hidden));
-  photoExampleToggle.textContent = photoExample.hidden ? 'Ver ejemplo' : 'Ocultar ejemplo';
+  photoExampleToggle.textContent = photoExample.hidden ? 'Ver foto de ejemplo' : 'Ocultar foto de ejemplo';
 });
