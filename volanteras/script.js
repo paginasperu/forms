@@ -1,8 +1,8 @@
 const fileRules = {
   cv: {
     maxBytes: 2 * 1024 * 1024,
-    extensions: ['pdf'],
-    message: 'El CV debe ser PDF y pesar hasta 2 MB.'
+    extensions: ['pdf', 'docx'],
+    message: 'El CV debe ser PDF o DOCX y pesar hasta 2 MB.'
   },
   foto: {
     maxBytes: 1024 * 1024,
@@ -16,6 +16,14 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBQhixsXAoqT7U
 const formStartedAt = Date.now();
 const submissionId = crypto.randomUUID();
 
+function hasAsciiSequence(bytes, text) {
+  const sequence = [...text].map(character => character.charCodeAt(0));
+  for (let i = 0; i <= bytes.length - sequence.length; i++) {
+    if (sequence.every((value, offset) => bytes[i + offset] === value)) return true;
+  }
+  return false;
+}
+
 async function fileValidationError(field, file) {
   const rule = fileRules[field];
   const label = field === 'cv' ? 'El CV' : 'La foto';
@@ -24,16 +32,21 @@ async function fileValidationError(field, file) {
   const extension = file.name.split('.').pop().toLowerCase();
   if (!rule.extensions.includes(extension)) {
     return field === 'cv'
-      ? 'Formato no admitido. El CV debe ser PDF; no se aceptan fotos ni capturas'
+      ? 'Formato no admitido. El CV debe ser PDF o DOCX; no se aceptan archivos DOC ni imágenes'
       : 'Formato no admitido. Usa una foto JPG, JPEG, JFIF o PNG';
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (field === 'cv') {
-    const limit = Math.min(bytes.length - 5, 1024);
-    for (let i = 0; i <= limit; i++) {
-      if ([37, 80, 68, 70, 45].every((value, offset) => bytes[i + offset] === value)) return '';
+    if (extension === 'pdf') {
+      const limit = Math.min(bytes.length - 5, 1024);
+      for (let i = 0; i <= limit; i++) {
+        if ([37, 80, 68, 70, 45].every((value, offset) => bytes[i + offset] === value)) return '';
+      }
+      return 'El contenido del archivo no corresponde a un PDF. Selecciona un PDF válido';
     }
-    return 'El contenido del archivo no corresponde a un PDF. Selecciona un PDF válido';
+    const isZip = bytes.length >= 4 && bytes[0] === 80 && bytes[1] === 75 && bytes[2] === 3 && bytes[3] === 4;
+    if (isZip && hasAsciiSequence(bytes, '[Content_Types].xml') && hasAsciiSequence(bytes, 'word/document.xml')) return '';
+    return 'El contenido del archivo no corresponde a un DOCX válido. Selecciona un documento de Word válido';
   }
   const isJpeg = bytes.length >= 5 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 &&
     bytes[bytes.length - 2] === 255 && bytes[bytes.length - 1] === 217;
