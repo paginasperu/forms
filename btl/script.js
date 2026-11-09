@@ -124,29 +124,29 @@ whatsapp.addEventListener('input', () => {
   whatsapp.setSelectionRange(position, position);
 });
 
-const socialLink = document.querySelector('[name="red_social"]');
-const socialError = document.getElementById('social-error');
-function validateSocialLink() {
-  const value = socialLink.value.trim();
-  socialLink.value = value;
+const portfolioLink = document.querySelector('[name="portafolio"]');
+const portfolioError = document.getElementById('portfolio-error');
+function validatePortfolioLink() {
+  const value = portfolioLink.value.trim();
+  portfolioLink.value = value;
   const valid = !value || (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
-  const message = valid ? '' : 'Introduce un enlace completo a una web o red social';
-  socialLink.setCustomValidity(message);
-  socialError.textContent = message;
-  socialError.hidden = valid;
-  if (valid) socialLink.removeAttribute('aria-invalid');
-  else socialLink.setAttribute('aria-invalid', 'true');
+  const message = valid ? '' : 'Introduce un enlace completo a una red social o página web';
+  portfolioLink.setCustomValidity(message);
+  portfolioError.textContent = message;
+  portfolioError.hidden = valid;
+  if (valid) portfolioLink.removeAttribute('aria-invalid');
+  else portfolioLink.setAttribute('aria-invalid', 'true');
   return valid;
 }
-socialLink.addEventListener('input', () => {
-  socialLink.setCustomValidity('');
-  socialError.hidden = true;
-  socialLink.removeAttribute('aria-invalid');
+portfolioLink.addEventListener('input', () => {
+  portfolioLink.setCustomValidity('');
+  portfolioError.hidden = true;
+  portfolioLink.removeAttribute('aria-invalid');
 });
-socialLink.addEventListener('blur', () => {
-  const value = socialLink.value.trim();
-  if (value && !/^https?:\/\//i.test(value)) socialLink.value = `https://${value}`;
-  validateSocialLink();
+portfolioLink.addEventListener('blur', () => {
+  const value = portfolioLink.value.trim();
+  if (value && !/^https?:\/\//i.test(value)) portfolioLink.value = `https://${value}`;
+  validatePortfolioLink();
 });
 
 const presentation = document.querySelector('[name="presentacion"]');
@@ -157,6 +157,22 @@ presentation.addEventListener('input', () => {
 const applicationForm = document.getElementById('application-form');
 const availabilityInputs = [...document.querySelectorAll('[name="horarios_disponibles"]')];
 const availabilityError = document.getElementById('availability-error');
+const positionInputs = [...document.querySelectorAll('[name="puesto"]')];
+const positionError = document.getElementById('position-error');
+let positionTouched = false;
+
+function updatePositionValidation(showError = positionTouched) {
+  const hasPosition = positionInputs.some(input => input.checked);
+  positionError.hidden = hasPosition || !showError;
+  return hasPosition;
+}
+
+positionInputs.forEach(input => {
+  input.addEventListener('change', () => {
+    positionTouched = true;
+    updatePositionValidation();
+  });
+});
 let availabilityTouched = false;
 
 function updateAvailabilityValidation(showError = availabilityTouched) {
@@ -175,8 +191,12 @@ availabilityInputs.forEach(input => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
-  validateSocialLink();
+  validatePortfolioLink();
   if (!applicationForm.reportValidity()) return;
+  if (!updatePositionValidation(true)) {
+    positionInputs[0].focus();
+    return;
+  }
   if (!updateAvailabilityValidation(true)) {
     availabilityInputs[0].focus();
     return;
@@ -223,10 +243,11 @@ applicationForm.addEventListener('submit', async event => {
       form_note: applicationForm.elements.form_note.value,
       nombres: applicationForm.elements.nombres.value.trim(),
       apellidos: applicationForm.elements.apellidos.value.trim(),
+      puesto: positionInputs.filter(input => input.checked).map(input => input.value),
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
       distrito: applicationForm.elements.distrito.value,
       whatsapp: applicationForm.elements.whatsapp.value,
-      red_social: applicationForm.elements.red_social.value.trim(),
+      portafolio: applicationForm.elements.portafolio.value.trim(),
       presentacion: applicationForm.elements.presentacion.value.trim(),
       horarios_disponibles: availabilityInputs.filter(input => input.checked).map(input => input.value),
       acepta_entrevista: applicationForm.elements.acepta_entrevista.checked,
@@ -301,16 +322,18 @@ function submitPayload(payload) {
       /^https:\/\/(?:[a-z0-9-]+-)?script\.googleusercontent\.com$/.test(event.origin);
     if (!trustedOrigin || !isSubmissionFrameSource(event.source, frame.contentWindow)) return;
     const message = event.data;
-    if (!message || message.channel !== 'oficial-promotoras' || message.id !== requestId) return;
+    if (!message || message.channel !== 'oficial-btl' || message.id !== requestId) return;
     completed = true;
     cleanup();
     if (message.ok) {
       applicationForm.reset();
       birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
       birthDateError.hidden = true;
-      socialLink.setCustomValidity('');
-      socialError.hidden = true;
-      socialLink.removeAttribute('aria-invalid');
+      portfolioLink.setCustomValidity('');
+      portfolioError.hidden = true;
+      portfolioLink.removeAttribute('aria-invalid');
+      positionTouched = false;
+      updatePositionValidation(false);
       document.querySelectorAll('.file-status').forEach(item => { item.textContent = ''; });
       availabilityTouched = false;
       updateAvailabilityValidation(false);
@@ -328,8 +351,9 @@ function submitPayload(payload) {
         INVALID_NAME: 'Revisa nombres y apellidos. Usa letras, espacios, guiones o apóstrofos.',
         INVALID_BIRTH_DATE: 'Revisa tu fecha de nacimiento.',
         INVALID_DISTRICT: 'Selecciona un distrito de la lista.',
+        INVALID_POSITION: 'Selecciona al menos un puesto de interés.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
-        INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social o déjalo vacío.',
+        INVALID_PORTFOLIO_LINK: 'Revisa el enlace de tu portafolio o déjalo vacío.',
         INVALID_PRESENTATION: 'Completa tu presentación con un máximo de 300 caracteres.',
         AVAILABILITY_REQUIRED: 'Selecciona al menos un día y horario disponible.',
         INVALID_AVAILABILITY: 'No pudimos leer los horarios seleccionados. Vuelve a marcarlos.',
