@@ -5,9 +5,9 @@ const fileRules = {
     message: 'El CV debe ser PDF o DOCX y pesar hasta 2 MB.'
   },
   foto: {
-    maxBytes: 1024 * 1024,
+    maxBytes: 2 * 1024 * 1024,
     extensions: ['jpg', 'jpeg', 'jfif', 'png'],
-    message: 'La foto debe ser JPG, JPEG o PNG y pesar hasta 1 MB.'
+    message: 'La foto debe ser JPG, JPEG o PNG y pesar hasta 2 MB.'
   }
 };
 
