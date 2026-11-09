@@ -23,7 +23,7 @@
   <meta name="twitter:title" content="Registro de volanteras | OFICIAL">
   <meta name="twitter:description" content="Postula como volantera en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
   <meta name="twitter:image" content="https://forms.oficial.pe/volanteras/assets/og-volanteras.jpg?v=2">
-  <link rel="stylesheet" href="styles.css?v=789954deab41">
+  <link rel="stylesheet" href="styles.css?v=47db4b323fc8">
 </head>
 <body>
   <header class="topbar">
@@ -234,19 +234,8 @@
 
       <label class="privacy-choice">
         <input type="checkbox" name="acepta_politica_privacidad" required>
-        <span>Acepto la <a class="privacy-link" id="privacy-link" href="#privacy-details" aria-controls="privacy-details" aria-expanded="false">política de privacidad</a> <span class="asterisk">*</span></span>
+        <span>Acepto la <a class="privacy-link" id="privacy-link" href="#privacy-dialog" aria-controls="privacy-dialog" aria-haspopup="dialog">política de privacidad</a> <span class="asterisk">*</span></span>
       </label>
-
-      <div class="privacy-details" id="privacy-details" hidden>
-        <div class="privacy-copy">
-          <p><strong>Responsable:</strong> José Luis Muro Porras, responsable de la agencia de publicidad OFICIAL.</p>
-          <p><strong>Finalidad:</strong> usar tus datos para evaluar esta postulación, verificar que tengas 18 años o más, contactarte y coordinar una entrevista. No usaremos tu información para publicar un perfil en el directorio.</p>
-          <p><strong>Datos solicitados:</strong> nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, red social, presentación, disponibilidad, CV y una foto.</p>
-          <p><strong>Almacenamiento y acceso:</strong> las respuestas y archivos se guardarán en Google Sheets y Google Drive. El acceso se limitará a las personas autorizadas para gestionar la selección.</p>
-          <p><strong>Conservación:</strong> guardaremos la información durante la evaluación y la eliminaremos cuando deje de ser necesaria para gestionar esta convocatoria, salvo que exista una obligación legal.</p>
-          <p>Puedes solicitar acceso, rectificación o eliminación, u oponerte al uso de tus datos, escribiendo al WhatsApp <a href="https://wa.me/51950141414" target="_blank" rel="noopener noreferrer">950 141 414</a>.</p>
-        </div>
-      </div>
 
       <div class="form-actions">
         <button class="submit-button" id="submit-button" type="submit">Enviar postulación</button>
@@ -256,8 +245,25 @@
         <input type="text" name="website" tabindex="-1" autocomplete="off">
       </label>
     </form>
+    <dialog class="privacy-dialog" id="privacy-dialog" aria-labelledby="privacy-dialog-title">
+      <header class="privacy-dialog-header">
+        <h2 id="privacy-dialog-title">Aviso de privacidad</h2>
+        <button class="privacy-dialog-x" id="privacy-dialog-x" type="button" aria-label="Cerrar aviso de privacidad">×</button>
+      </header>
+      <div class="privacy-copy" tabindex="0" aria-label="Texto del aviso de privacidad">
+        <p><strong>Responsable:</strong> José Luis Muro Porras, persona natural con negocio, identificado con RUC 10455625195 y domiciliado en Calle Los Nogales, Mz. D1, lote 5, Urb. Benjamín Doig Lossio, etapa 2, distrito de La Perla, Provincia Constitucional del Callao, Perú.</p>
+        <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria de volanteras, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades de volanteo. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
+        <p>El formulario solicita nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, presentación, horarios disponibles, CV y una fotografía. El enlace a una red social es opcional. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
+        <p><strong>Almacenamiento y acceso:</strong> Las respuestas y archivos se almacenan en Google Sheets y Google Drive. Google LLC puede procesarlos en otros países donde opera su infraestructura. José Luis Muro Porras gestionará las postulaciones y tendrá acceso a esos datos.</p>
+        <p><strong>Conservación:</strong> Conservaremos tus datos hasta 90 días después del cierre de esta convocatoria y luego los eliminaremos, salvo que una obligación legal exija conservarlos. No los usaremos para futuras convocatorias sin solicitarte una autorización aparte.</p>
+        <p><strong>Tus derechos:</strong> Puedes solicitar acceso, rectificación, cancelación u oposición, o retirar tu consentimiento, escribiendo a <a href="mailto:privacidad@oficial.pe">privacidad@oficial.pe</a> o al WhatsApp <a href="https://wa.me/51950141414">950 141 414</a>.</p>
+      </div>
+      <footer class="privacy-dialog-footer">
+        <button class="privacy-dialog-close" id="privacy-dialog-close" type="button">Cerrar</button>
+      </footer>
+    </dialog>
     <iframe class="submission-frame" id="submission-frame" name="submission-frame" title="Resultado del envío" aria-hidden="true" tabindex="-1"></iframe>
   </main>
-  <script src="script.js?v=46c57c83f1ba"></script>
+  <script src="script.js?v=94814bec1d60"></script>
 </body>
 </html>

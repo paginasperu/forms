@@ -361,15 +361,15 @@ function isSubmissionFrameSource(source, frameWindow) {
 }
 
 const privacyLink = document.getElementById('privacy-link');
-const privacyDetails = document.getElementById('privacy-details');
+const privacyDialog = document.getElementById('privacy-dialog');
+const privacyDialogClose = document.getElementById('privacy-dialog-close');
+const privacyDialogX = document.getElementById('privacy-dialog-x');
 privacyLink.addEventListener('click', event => {
   event.preventDefault();
-  privacyDetails.hidden = !privacyDetails.hidden;
-  privacyLink.setAttribute('aria-expanded', String(!privacyDetails.hidden));
-  privacyDetails.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
+  privacyDialog.showModal();
 });
-
+privacyDialogClose.addEventListener('click', () => privacyDialog.close());
+privacyDialogX.addEventListener('click', () => privacyDialog.close());
 const birthDate = document.querySelector('[name="fecha_nacimiento"]');
 const birthParts = ['birth_day', 'birth_month', 'birth_year'].map(name => applicationForm.elements[name]);
 const birthDateError = document.getElementById('birthdate-error');
