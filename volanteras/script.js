@@ -220,7 +220,7 @@ applicationForm.addEventListener('submit', async event => {
       id: submissionId,
       origin: location.origin,
       formStartedAt,
-      website: applicationForm.elements.website.value,
+      form_note: applicationForm.elements.form_note.value,
       nombres: applicationForm.elements.nombres.value.trim(),
       apellidos: applicationForm.elements.apellidos.value.trim(),
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
@@ -282,7 +282,7 @@ function submitPayload(payload) {
   const timeout = window.setTimeout(() => {
     if (completed) return;
     cleanup();
-    status.textContent = 'No pudimos confirmar el envío por un problema técnico del formulario. Inténtalo más tarde.';
+    status.textContent = `No pudimos confirmar si se recibió tu postulación. Puedes volver a intentarlo desde esta página. Código de intento: ${submissionId.slice(-8).toUpperCase()}`;
     status.classList.add('error');
     submitButton.removeAttribute('aria-busy');
     submitButton.disabled = false;
@@ -319,21 +319,43 @@ function submitPayload(payload) {
       submitButton.textContent = 'Postulación enviada';
     } else {
       const errorMessages = {
-        INVALID_SUBMISSION: 'El receptor rechazó los datos enviados',
+        INVALID_SUBMISSION: 'No pudimos validar algunos datos. Revisa la información e inténtalo de nuevo.',
+        INVALID_FILE: 'Revisa el formato y el contenido de tu CV y de tu foto.',
+        INVALID_REQUEST: 'No pudimos procesar los datos del formulario. Recarga la página e inténtalo de nuevo.',
+        FORM_NOT_VERIFIED: 'No pudimos validar el envío. Recarga la página e inténtalo de nuevo.',
+        SUBMISSION_TOO_FAST: 'Espera unos segundos y vuelve a enviar el formulario.',
+        FORM_EXPIRED: 'El formulario estuvo abierto mucho tiempo. Recarga la página y vuelve a enviarlo.',
+        INVALID_NAME: 'Revisa nombres y apellidos. Usa letras, espacios, guiones o apóstrofos.',
+        INVALID_BIRTH_DATE: 'Revisa tu fecha de nacimiento.',
+        INVALID_DISTRICT: 'Selecciona un distrito de la lista.',
+        INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
+        INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social o déjalo vacío.',
+        INVALID_PRESENTATION: 'Completa tu presentación con un máximo de 300 caracteres.',
+        AVAILABILITY_REQUIRED: 'Selecciona al menos un día y horario disponible.',
+        INVALID_AVAILABILITY: 'No pudimos leer los horarios seleccionados. Vuelve a marcarlos.',
+        REQUEST_MISSING: 'No se recibió el formulario completo. Recarga la página e inténtalo de nuevo.',
         CONSENT_REQUIRED: 'Debes aceptar la entrevista y la política de privacidad',
         UNDERAGE: 'Debes tener 18 años cumplidos para postular',
-        INVALID_FILE: 'El receptor rechazó el formato o contenido del CV o de la foto',
-        REQUEST_TOO_LARGE: 'Los archivos enviados superan el tamaño permitido',
-        BUSY: 'El receptor está ocupado',
-        SHEET_NOT_READY: 'No se encontró la pestaña configurada en Google Sheets',
-        SHEET_HEADERS_MISMATCH: 'Las columnas de Google Sheets no coinciden con la configuración',
-        STORAGE_NOT_PRIVATE: 'La configuración de acceso de la hoja o carpeta no coincide con la requerida',
-        RECORD_IDS_INVALID: 'La numeración de registros necesita revisión del responsable',
-        ID_STATE_INVALID: 'No se pudo asignar el número de postulación',
-        SERVER_ERROR: 'Ocurrió un error interno en Apps Script'
+        CV_REQUIRED: 'Selecciona tu CV antes de enviar la postulación.',
+        PHOTO_REQUIRED: 'Selecciona una foto antes de enviar la postulación.',
+        INVALID_CV: 'El CV no es un PDF o DOCX válido. Revisa el archivo e inténtalo de nuevo.',
+        INVALID_PHOTO: 'La foto no es JPG, JPEG, JFIF o PNG válida. Revisa el archivo e inténtalo de nuevo.',
+        CV_TOO_LARGE: 'El CV supera el máximo de 2 MB.',
+        PHOTO_TOO_LARGE: 'La foto supera el máximo de 2 MB.',
+        REQUEST_TOO_LARGE: 'Los archivos superan el tamaño total permitido. Reduce su tamaño e inténtalo de nuevo.',
+        BUSY: 'Estamos recibiendo varias postulaciones. Espera un momento e inténtalo de nuevo.',
+        SHEET_NOT_READY: 'No pudimos guardar tu postulación en este momento. Inténtalo más tarde.',
+        SHEET_HEADERS_MISMATCH: 'No pudimos guardar tu postulación en este momento. Inténtalo más tarde.',
+        STORAGE_NOT_PRIVATE: 'No pudimos guardar tu postulación en este momento. Inténtalo más tarde.',
+        RECORD_IDS_INVALID: 'No pudimos guardar tu postulación en este momento. Inténtalo más tarde.',
+        ID_STATE_INVALID: 'No pudimos guardar tu postulación en este momento. Inténtalo más tarde.',
+        SERVER_ERROR: 'Tuvimos un problema al procesar tu postulación. Puedes intentarlo otra vez; si vuelve a ocurrir, contáctanos con el código de seguimiento.'
       };
       const code = Object.hasOwn(errorMessages, message.code) ? message.code : 'UNKNOWN_ERROR';
-      status.textContent = `${errorMessages[code] || 'El receptor devolvió un error inesperado'}. Referencia: ${code}`;
+      const reference = typeof message.reference === 'string' ? message.reference.slice(-8).toUpperCase() : '';
+      const needsSupport = ['SHEET_NOT_READY', 'SHEET_HEADERS_MISMATCH', 'STORAGE_NOT_PRIVATE', 'RECORD_IDS_INVALID', 'ID_STATE_INVALID', 'SERVER_ERROR', 'UNKNOWN_ERROR'].includes(code);
+      const referenceText = reference && needsSupport ? ` Código de seguimiento: ${reference}` : '';
+      status.textContent = `${errorMessages[code] || 'No se pudo completar el envío. Inténtalo de nuevo y, si persiste, contáctanos.'}${referenceText}`;
       status.classList.add('error');
       submitButton.removeAttribute('aria-busy');
       submitButton.disabled = false;
