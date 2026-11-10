@@ -31,13 +31,16 @@
   </header>
 
   <main id="inicio" class="page-shell">
+    <div class="btl-photo"><img src="assets/equipo-btl.webp" alt="Equipo de OFICIAL en una activación BTL" width="2048" height="683" fetchpriority="high"></div>
     <section class="intro" aria-labelledby="page-title">
       <p id="page-title">Registro de personal BTL</p>
     </section>
 
+    <p class="required-key">Todos los campos son obligatorios, excepto los marcados como opcionales</p>
+
     <form class="application" id="application-form">
       <fieldset class="position-fieldset" aria-describedby="position-hint position-error">
-        <legend>Puesto <span class="asterisk" aria-hidden="true">*</span></legend>
+        <legend>Puesto</legend>
         <p class="field-hint" id="position-hint">Puedes elegir varios</p>
         <div class="position-options">
           <label class="position-option"><input type="checkbox" name="puesto" value="Volantera"><span>Volantera</span></label>
@@ -56,7 +59,7 @@
               <svg viewBox="0 0 32 32" fill="none"><path d="M9 3.75h9l6 6v18.5H9a2 2 0 0 1-2-2v-20a2.5 2.5 0 0 1 2-2.5Z" stroke="currentColor" stroke-width="1.8"/><path d="M18 4v6h6M10.5 20h11M10.5 23.5h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M10.5 16.5h3.2a1.8 1.8 0 0 0 0-3.6h-3.2v5.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
             </div>
             <div class="upload-copy">
-              <h3 id="cv-title">CV <span class="asterisk">*</span></h3>
+              <h3 id="cv-title">CV</h3>
             </div>
           </div>
           <label class="file-picker" for="cv-file" aria-label="Seleccionar CV en PDF o DOCX">
@@ -73,7 +76,7 @@
               <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="13" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="m6 23 6.4-6 4.1 3.6 4.8-5 4.7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
             <div class="upload-copy">
-              <h3 id="photo-title">Foto <span class="asterisk">*</span></h3>
+              <h3 id="photo-title">Foto</h3>
             </div>
           </div>
           <label class="file-picker" for="photo-file" aria-label="Seleccionar una foto">
@@ -94,15 +97,15 @@
       <h2 class="section-title personal-title">Datos personales</h2>
       <div class="personal-grid">
         <label class="text-field">
-          <span>Nombres <span class="asterisk">*</span></span>
+          <span>Nombres</span>
           <input name="nombres" type="text" autocomplete="given-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
         </label>
         <label class="text-field">
-          <span>Apellidos <span class="asterisk">*</span></span>
+          <span>Apellidos</span>
           <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
         </label>
         <fieldset class="birthdate-field" aria-describedby="birthdate-error">
-          <legend>Fecha de nacimiento <span class="asterisk">*</span></legend>
+          <legend>Fecha de nacimiento</legend>
           <div class="birthdate-parts">
             <label class="text-field"><span>Día</span><input name="birth_day" type="text" inputmode="numeric" autocomplete="bday-day" maxlength="2" pattern="[0-9]{1,2}" placeholder="Día" required></label>
             <label class="text-field"><span>Mes</span><select name="birth_month" autocomplete="bday-month" required><option value="" selected disabled>Mes</option><option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option><option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option><option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option><option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option></select></label>
@@ -112,7 +115,7 @@
           <small class="field-hint field-error" id="birthdate-error" aria-live="polite" hidden></small>
         </fieldset>
         <label class="text-field mobile-wide">
-          <span>Distrito <span class="asterisk">*</span></span>
+          <span>Distrito</span>
           <select name="distrito" autocomplete="address-level3" required>
             <option value="" selected disabled>Selecciona tu distrito</option>
             <optgroup label="Lima Metropolitana">
@@ -176,7 +179,7 @@
       <h2 class="section-title personal-title">Datos de contacto</h2>
       <div class="personal-grid">
         <label class="text-field mobile-wide">
-          <span>WhatsApp <span class="asterisk">*</span></span>
+          <span>WhatsApp</span>
           <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" minlength="11" maxlength="11" required>
         </label>
         <label class="text-field mobile-wide">
@@ -187,7 +190,7 @@
         </label>
       </div>
 
-      <h2 class="section-title personal-title" id="presentation-title">Presentación <span class="asterisk" aria-hidden="true">*</span></h2>
+      <h2 class="section-title personal-title" id="presentation-title">Presentación</h2>
       <div class="personal-grid">
         <label class="text-field mobile-wide presentation-field">
           <textarea name="presentacion" rows="3" maxlength="300" aria-labelledby="presentation-title" aria-describedby="presentation-help" required></textarea>
@@ -242,12 +245,12 @@
 
       <label class="interview-choice">
         <input type="checkbox" name="acepta_entrevista" required>
-        <span>Acepto una entrevista por videollamada <span class="asterisk">*</span></span>
+        <span>Acepto una entrevista por videollamada</span>
       </label>
 
       <label class="privacy-choice">
         <input type="checkbox" name="acepta_politica_privacidad" required>
-        <span>Acepto la <a class="privacy-link" id="privacy-link" href="#privacy-dialog" aria-controls="privacy-dialog" aria-haspopup="dialog">política de privacidad</a> <span class="asterisk">*</span></span>
+        <span>Acepto la <a class="privacy-link" id="privacy-link" href="#privacy-dialog" aria-controls="privacy-dialog" aria-haspopup="dialog">política de privacidad</a></span>
       </label>
 
       <div class="form-actions">
