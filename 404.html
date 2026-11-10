@@ -7,6 +7,9 @@
   <meta name="theme-color" content="#f4f5f7">
   <title>Esta página no está disponible | OFICIAL</title>
   <meta name="description" content="La página que buscas no está disponible. Vuelve al formulario BTL de OFICIAL.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@800&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -19,6 +22,8 @@
       -moz-osx-font-smoothing: grayscale;
     }
     * { box-sizing: border-box; }
+    .brand-wordmark { color: #101827; font: 800 25px/1 Manrope, sans-serif; letter-spacing: -1.7px; }
+    .brand-wordmark span { color: #1268e8; }
     body {
       display: grid;
       min-width: 320px;
@@ -42,15 +47,7 @@
       box-shadow: 0 12px 36px rgb(25 35 50 / 5%);
       text-align: center;
     }
-    .brand-window {
-      width: min(112px, 50vw);
-      margin-bottom: 32px;
-    }
-    .brand-window img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
+    .brand-window { width: auto; margin-bottom: 32px; }
     h1 {
       margin: 0;
       font-size: clamp(26px, 6vw, 32px);
@@ -88,6 +85,7 @@
       body { padding: 16px; }
       main { min-height: 360px; padding: 40px 24px; }
       .brand-window { margin-bottom: 26px; }
+      .brand-wordmark { font-size: 23px; }
       .action { width: 100%; }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -97,9 +95,7 @@
 </head>
 <body>
   <main>
-    <div class="brand-window">
-      <img src="/btl/assets/oficial-logo.png" width="224" height="54" alt="OFICIAL">
-    </div>
+    <div class="brand-window"><span class="brand-wordmark" aria-label="OFICIAL">oficial<span>.</span></span></div>
     <h1>Esta página no está disponible</h1>
     <p>Revisa el enlace o vuelve al formulario</p>
     <a class="action" href="/btl/">Ir al formulario BTL</a>
