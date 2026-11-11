@@ -48,7 +48,7 @@
           <label class="position-option"><input type="checkbox" name="puesto" value="Anfitriona"><span>Anfitriona</span></label>
           <label class="position-option"><input type="checkbox" name="puesto" value="Animadora"><span>Animadora</span></label>
         </div>
-        <small class="field-hint field-error position-error" id="position-error" aria-live="polite" hidden></small>
+        <small class="field-hint field-error position-error" id="position-error" aria-live="polite" hidden>Selecciona al menos un puesto</small>
       </fieldset>
 
       <h2 class="section-title">Documentos</h2>
@@ -98,11 +98,11 @@
       <div class="personal-grid">
         <label class="text-field">
           <span>Nombres</span>
-          <input name="nombres" type="text" autocomplete="given-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
+          <input name="nombres" type="text" autocomplete="given-name" pattern="[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios o guiones." required>
         </label>
         <label class="text-field">
           <span>Apellidos</span>
-          <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s'\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios, guiones o apóstrofos." required>
+          <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios o guiones." required>
         </label>
         <fieldset class="birthdate-field" aria-describedby="birthdate-error">
           <legend>Fecha de nacimiento</legend>
@@ -180,7 +180,7 @@
       <div class="personal-grid">
         <label class="text-field mobile-wide">
           <span>WhatsApp</span>
-          <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" minlength="11" maxlength="11" required>
+          <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" required>
         </label>
         <label class="text-field mobile-wide">
           <span>Portafolio <span class="optional">Opcional</span></span>
@@ -288,6 +288,6 @@
       <a href="mailto:rrhh@oficial.pe" target="_blank" rel="noopener noreferrer">Correo</a>
     </nav>
   </footer>
-  <script src="script.js?v=20261109-btl"></script>
+  <script src="script.js?v=20261111-validacion"></script>
 </body>
 </html>

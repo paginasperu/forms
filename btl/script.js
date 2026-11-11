@@ -66,7 +66,12 @@ for (const field of Object.keys(fileRules)) {
   const input = document.querySelector(`[name="${field}"]`);
   const status = fileStatus(field);
   input.setAttribute('aria-describedby', status.id);
+  const pickerLabel = input.closest('.file-picker').querySelector('.picker-label');
   let selection = 0;
+  input.form.addEventListener('reset', () => {
+    selection++;
+    pickerLabel.textContent = 'Subir';
+  });
   input.addEventListener('change', async () => {
     const current = ++selection;
     const file = input.files[0];
@@ -83,6 +88,7 @@ for (const field of Object.keys(fileRules)) {
     }
     if (current !== selection) return;
     status.textContent = error || file.name;
+    pickerLabel.textContent = error ? 'Subir' : 'Cambiar';
     status.classList.toggle('error', Boolean(error));
     if (error) {
       input.value = '';
@@ -95,8 +101,8 @@ for (const input of document.querySelectorAll('[name="nombres"], [name="apellido
   input.addEventListener('input', () => {
     const before = input.value;
     const caret = input.selectionStart ?? before.length;
-    const allowedBeforeCaret = before.slice(0, caret).replace(/[^\p{L}\p{M}\s'-]/gu, '').length;
-    input.value = before.replace(/[^\p{L}\p{M}\s'-]/gu, '');
+    const allowedBeforeCaret = before.slice(0, caret).replace(/[^\p{L}\p{M}\s-]/gu, '').length;
+    input.value = before.replace(/[^\p{L}\p{M}\s-]/gu, '');
     input.setSelectionRange(allowedBeforeCaret, allowedBeforeCaret);
   });
 
@@ -111,7 +117,8 @@ whatsapp.addEventListener('input', () => {
   const caret = whatsapp.selectionStart ?? before.length;
   const digitsBeforeCaret = before.slice(0, caret).replace(/\D/g, '').length;
   let raw = before.trim().replace(/^(?:\+51|0051)/, '');
-  const digits = raw.replace(/\D/g, '').slice(0, 9);
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length > 9 || /[^\d\s().-]/.test(raw)) return;
   const formatted = digits.replace(/(\d{3})(?=\d)/g, '$1 ');
   whatsapp.value = formatted;
 
@@ -159,11 +166,56 @@ const availabilityInputs = [...document.querySelectorAll('[name="horarios_dispon
 const availabilityError = document.getElementById('availability-error');
 const positionInputs = [...document.querySelectorAll('[name="puesto"]')];
 const positionError = document.getElementById('position-error');
+const fieldMessages = {
+  cv: 'Selecciona tu CV',
+  foto: 'Selecciona tu foto',
+  nombres: 'Ingresa tus nombres',
+  apellidos: 'Ingresa tus apellidos',
+  birth_day: 'Ingresa el día de nacimiento',
+  birth_month: 'Selecciona el mes de nacimiento',
+  birth_year: 'Ingresa el año de nacimiento',
+  distrito: 'Selecciona tu distrito',
+  whatsapp: 'Ingresa un celular peruano de 9 dígitos que empiece en 9',
+  presentacion: 'Escribe una breve presentación',
+  acepta_entrevista: 'Confirma que aceptas la entrevista',
+  acepta_politica_privacidad: 'Acepta la política de privacidad'
+};
+
+function showFieldError(input, message) {
+  const id = input.name + '-validation-error';
+  let error = document.getElementById(id);
+  if (!error) {
+    error = document.createElement('small');
+    error.id = id;
+    error.className = 'field-hint field-error';
+    error.setAttribute('aria-live', 'polite');
+    if (input.type === 'file') fileStatus(input.name).after(error);
+    else if (input.type === 'checkbox') input.closest('label').after(error);
+    else input.closest('label').append(error);
+    const descriptions = input.getAttribute('aria-describedby');
+    input.setAttribute('aria-describedby', [descriptions, id].filter(Boolean).join(' '));
+  }
+  error.textContent = message;
+  error.hidden = !message;
+  if (message) input.setAttribute('aria-invalid', 'true');
+  else input.removeAttribute('aria-invalid');
+}
+
+function clearFieldError(event) {
+  const input = event.target;
+  if (document.getElementById(input.name + '-validation-error')) showFieldError(input, '');
+}
+
+applicationForm.addEventListener('input', clearFieldError);
+applicationForm.addEventListener('change', clearFieldError);
+applicationForm.noValidate = true;
+
 let positionTouched = false;
 
 function updatePositionValidation(showError = positionTouched) {
   const hasPosition = positionInputs.some(input => input.checked);
   positionError.hidden = hasPosition || !showError;
+  positionInputs[0].setAttribute('aria-describedby', 'position-hint position-error');
   return hasPosition;
 }
 
@@ -178,6 +230,7 @@ let availabilityTouched = false;
 function updateAvailabilityValidation(showError = availabilityTouched) {
   const hasAvailability = availabilityInputs.some(input => input.checked);
   availabilityError.hidden = hasAvailability || !showError;
+  availabilityInputs[0].setAttribute('aria-describedby', 'availability-error');
   return hasAvailability;
 }
 
@@ -192,13 +245,24 @@ applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
   validatePortfolioLink();
-  if (!applicationForm.reportValidity()) return;
-  if (!updatePositionValidation(true)) {
-    positionInputs[0].focus();
-    return;
+  presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación');
+  let firstInvalid = null;
+  for (const input of applicationForm.elements) {
+    if (input === positionInputs[0] && !updatePositionValidation(true)) firstInvalid ??= input;
+    if (input === availabilityInputs[0] && !updateAvailabilityValidation(true)) firstInvalid ??= input;
+    if (!input.willValidate || input.validity.valid) continue;
+    firstInvalid ??= input;
+    if (input === portfolioLink || (birthParts.includes(input) && input.validity.customError)) continue;
+    let message = fieldMessages[input.name] || input.validationMessage;
+    if (!input.validity.valueMissing && (input.name === 'nombres' || input.name === 'apellidos')) {
+      message = 'Usa entre 2 y 80 caracteres: letras, espacios o guiones';
+    } else if (!input.validity.valueMissing && (input.name === 'birth_day' || input.name === 'birth_year')) {
+      message = input.name === 'birth_day' ? 'Ingresa un día con uno o dos dígitos' : 'Ingresa un año de cuatro dígitos';
+    }
+    showFieldError(input, message);
   }
-  if (!updateAvailabilityValidation(true)) {
-    availabilityInputs[0].focus();
+  if (firstInvalid) {
+    firstInvalid.focus();
     return;
   }
 
