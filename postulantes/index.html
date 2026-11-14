@@ -23,7 +23,7 @@
   <meta name="twitter:title" content="Registro de postulantes | OFICIAL">
   <meta name="twitter:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
   <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
-  <link rel="stylesheet" href="styles.css?v=20261114-postulantes">
+  <link rel="stylesheet" href="styles.css?v=20261114-secciones">
 </head>
 <body>
   <header class="topbar">
@@ -39,6 +39,7 @@
     <p class="required-key">Todos los campos son obligatorios, excepto los marcados como opcionales</p>
 
     <form class="application" id="application-form">
+      <section class="application-section">
       <fieldset class="position-fieldset" aria-describedby="modality-error">
         <legend>Modalidad</legend>
         <div class="modality-options">
@@ -54,6 +55,8 @@
         <small class="field-hint field-error" id="position-error" aria-live="polite" hidden></small>
       </div>
 
+      </section>
+      <section class="application-section">
       <h2 class="section-title">Documentos</h2>
       <div class="upload-grid">
         <section class="upload-card" aria-labelledby="cv-title">
@@ -98,6 +101,8 @@
         <figcaption>Foto de referencia</figcaption>
       </figure>
 
+      </section>
+      <section class="application-section">
       <h2 class="section-title personal-title">Datos personales</h2>
       <div class="personal-grid">
         <label class="text-field">
@@ -180,6 +185,8 @@
         </label>
       </div>
 
+      </section>
+      <section class="application-section">
       <h2 class="section-title personal-title">Datos de contacto</h2>
       <div class="personal-grid">
         <label class="text-field mobile-wide">
@@ -193,6 +200,8 @@
         </label>
       </div>
 
+      </section>
+      <section class="application-section">
       <h2 class="section-title personal-title" id="presentation-title">Presentación</h2>
       <div class="personal-grid">
         <label class="text-field mobile-wide presentation-field">
@@ -213,6 +222,8 @@
         </label>
       </div>
 
+      </section>
+      <section class="application-section">
       <h2 class="section-title personal-title" id="availability-title">Horarios disponibles</h2>
       <fieldset class="availability-fieldset" aria-labelledby="availability-title">
         <div class="availability-grid">
@@ -258,6 +269,8 @@
         <small class="field-hint field-error" id="availability-error" aria-live="polite" hidden>Selecciona al menos un día y un horario</small>
       </fieldset>
 
+      </section>
+      <section class="application-section">
       <label class="interview-choice">
         <input type="checkbox" name="acepta_entrevista" required>
         <span>Acepto una entrevista por videollamada</span>
@@ -272,6 +285,7 @@
         <button class="submit-button" id="submit-button" type="submit">Enviar postulación</button>
         <p class="form-status" id="form-status" role="status" aria-live="polite" hidden></p>
       </div>
+      </section>
       <label class="honeypot-field" aria-hidden="true">Deja este campo vacío
         <input type="text" name="form_note" tabindex="-1" autocomplete="off">
       </label>
