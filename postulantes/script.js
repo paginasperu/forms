@@ -131,12 +131,30 @@ whatsapp.addEventListener('input', () => {
   whatsapp.setSelectionRange(position, position);
 });
 
+const socialLink = document.querySelector('[name="red_social"]');
 const portfolioLink = document.querySelector('[name="portafolio"]');
 const portfolioError = document.getElementById('portfolio-error');
+function isProfileUrl(value) {
+  return (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
+}
+
+function normalizeProfileLink(input) {
+  const value = input.value.trim();
+  const candidate = 'https://' + value;
+  input.value = value && isProfileUrl(candidate) ? candidate : value;
+  return input.value;
+}
+
+function validateSocialLink() {
+  const value = normalizeProfileLink(socialLink);
+  const message = value && !isProfileUrl(value) ? fieldMessages.red_social : '';
+  socialLink.setCustomValidity(message);
+  if (message || document.getElementById('red_social-validation-error')) showFieldError(socialLink, message);
+}
+
 function validatePortfolioLink() {
-  const value = portfolioLink.value.trim();
-  portfolioLink.value = value;
-  const valid = !value ? !portfolioLink.required : (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
+  const value = normalizeProfileLink(portfolioLink);
+  const valid = !value ? !portfolioLink.required : isProfileUrl(value);
   const message = valid ? '' : (value ? 'Introduce un enlace completo a una red social o página web' : 'Ingresa tu portafolio para postular a un puesto remoto');
   portfolioLink.setCustomValidity(message);
   portfolioError.textContent = message;
@@ -150,11 +168,9 @@ portfolioLink.addEventListener('input', () => {
   portfolioError.hidden = true;
   portfolioLink.removeAttribute('aria-invalid');
 });
-portfolioLink.addEventListener('blur', () => {
-  const value = portfolioLink.value.trim();
-  if (value && !/^https?:\/\//i.test(value)) portfolioLink.value = `https://${value}`;
-  validatePortfolioLink();
-});
+portfolioLink.addEventListener('blur', validatePortfolioLink);
+socialLink.addEventListener('blur', validateSocialLink);
+socialLink.addEventListener('input', () => socialLink.setCustomValidity(''));
 
 const presentation = document.querySelector('[name="presentacion"]');
 presentation.addEventListener('input', () => {
@@ -174,6 +190,8 @@ const fieldMessages = {
   birth_year: 'Ingresa el año de nacimiento',
   distrito: 'Selecciona tu distrito',
   whatsapp: 'Ingresa un celular peruano de 9 dígitos que empiece en 9',
+  red_social: 'Ingresa un enlace válido a tu perfil',
+  tarifa_hora: 'Ingresa un monto entero mayor que cero',
   presentacion: 'Escribe una breve presentación',
   acepta_entrevista: 'Confirma que aceptas la entrevista',
   acepta_politica_privacidad: 'Acepta la política de privacidad'
@@ -261,10 +279,27 @@ availabilityInputs.forEach(input => {
   });
 });
 
+const rate = applicationForm.elements.tarifa_hora;
+const rateDigits = /^[0-9]*$/;
+let lastRateValue = rate.value;
+rate.addEventListener('beforeinput', event => {
+  if (event.data && !rateDigits.test(event.data)) event.preventDefault();
+});
+rate.addEventListener('input', () => {
+  if (rateDigits.test(rate.value)) lastRateValue = rate.value;
+  else rate.value = lastRateValue;
+  rate.setCustomValidity('');
+});
+applicationForm.addEventListener('reset', () => {
+  lastRateValue = rate.defaultValue;
+  rate.setCustomValidity('');
+});
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
   validatePortfolioLink();
+  rate.setCustomValidity(!rate.value || Number.isSafeInteger(Number(rate.value)) ? '' : fieldMessages.tarifa_hora);
+  validateSocialLink();
   presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación');
   let firstInvalid = null;
   for (const input of applicationForm.elements) {
@@ -338,6 +373,8 @@ applicationForm.addEventListener('submit', async event => {
       distrito: applicationForm.elements.distrito.value,
       whatsapp: applicationForm.elements.whatsapp.value,
       portafolio: applicationForm.elements.portafolio.value.trim(),
+      red_social: socialLink.value,
+      tarifa_hora: Number(rate.value),
       presentacion: applicationForm.elements.presentacion.value.trim(),
       horarios_disponibles: availabilityInputs.filter(input => input.checked).map(input => input.value),
       acepta_entrevista: applicationForm.elements.acepta_entrevista.checked,
@@ -417,6 +454,7 @@ function submitPayload(payload) {
     cleanup();
     if (message.ok) {
       applicationForm.reset();
+      socialLink.setCustomValidity('');
       birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
       birthDateError.hidden = true;
       portfolioLink.setCustomValidity('');
@@ -444,6 +482,8 @@ function submitPayload(payload) {
         INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
         PORTFOLIO_REQUIRED: 'Ingresa tu portafolio para postular a un puesto remoto.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
+        INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social.',
+        INVALID_HOURLY_RATE: 'Ingresa una tarifa por hora entera mayor que cero.',
         INVALID_PORTFOLIO_LINK: 'Revisa el enlace de tu portafolio o déjalo vacío.',
         INVALID_PRESENTATION: 'Completa tu presentación con un máximo de 300 caracteres.',
         AVAILABILITY_REQUIRED: 'Selecciona al menos un día y horario disponible.',

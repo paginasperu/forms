@@ -187,18 +187,29 @@
           <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" required>
         </label>
         <label class="text-field mobile-wide">
-          <span>Portafolio <span class="optional" id="portfolio-optional" hidden>Opcional</span></span>
-                    <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-help portfolio-error" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a una red social o página web.">
-          <small class="field-hint" id="portfolio-help">Enlace a tu red social o página web</small>
-          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
+          <span>Red social <span class="optional">Opcional</span></span>
+          <input name="red_social" type="url" maxlength="2048" inputmode="url" aria-describedby="social-help">
+          <small class="field-hint" id="social-help">Enlace a tu perfil</small>
         </label>
       </div>
 
       <h2 class="section-title personal-title" id="presentation-title">Presentación</h2>
       <div class="personal-grid">
         <label class="text-field mobile-wide presentation-field">
-          <textarea name="presentacion" rows="3" maxlength="300" aria-labelledby="presentation-title" aria-describedby="presentation-help" required></textarea>
+          <span>Sobre ti</span>
+          <textarea name="presentacion" rows="3" maxlength="300" aria-describedby="presentation-help" required></textarea>
           <small class="field-hint" id="presentation-help">Describe brevemente lo que te hace diferente</small>
+        </label>
+        <label class="text-field mobile-wide">
+          <span>Portafolio <span class="optional" id="portfolio-optional" hidden>Opcional</span></span>
+          <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-help portfolio-error" inputmode="url" autocomplete="url" title="Pega un enlace válido a tu portafolio.">
+          <small class="field-hint" id="portfolio-help">Enlace a una muestra de tu trabajo</small>
+          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
+        </label>
+        <label class="text-field mobile-wide">
+          <span>Tarifa por hora (S/)</span>
+          <input name="tarifa_hora" type="text" inputmode="numeric" pattern="0*[1-9][0-9]*" aria-describedby="rate-help" required>
+          <small class="field-hint" id="rate-help">Indica cuánto deseas ganar</small>
         </label>
       </div>
 
@@ -273,7 +284,7 @@
       <div class="privacy-copy" tabindex="0" aria-label="Texto del aviso de privacidad">
         <p><strong>Responsable:</strong> José Luis Muro Porras, persona natural con negocio, identificado con RUC 10455625195 y domiciliado en Calle Los Nogales, Mz. D1, lote 5, Urb. Benjamín Doig Lossio, etapa 2, distrito de La Perla, Provincia Constitucional del Callao, Perú.</p>
         <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria para el puesto remoto o presencial que selecciones, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades relacionadas con el puesto de tu interés. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
-        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, presentación, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es obligatorio para modalidad remota y opcional para modalidad presencial. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
+        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, red social opcional, presentación, tarifa por hora, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es obligatorio para modalidad remota y opcional para modalidad presencial. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
         <p><strong>Almacenamiento y acceso:</strong> Las respuestas y archivos se almacenan en Google Sheets y Google Drive. Google LLC puede procesarlos en otros países donde opera su infraestructura. José Luis Muro Porras gestionará las postulaciones y tendrá acceso a esos datos.</p>
         <p><strong>Conservación:</strong> Conservaremos tus datos hasta 90 días después del cierre de esta convocatoria y luego los eliminaremos, salvo que una obligación legal exija conservarlos. No los usaremos para futuras convocatorias sin solicitarte una autorización aparte.</p>
         <p><strong>Tus derechos:</strong> Puedes solicitar acceso, rectificación, cancelación u oposición, o retirar tu consentimiento, escribiendo a <a href="mailto:privacidad@oficial.pe">privacidad@oficial.pe</a> o al WhatsApp <a href="https://wa.me/51950141414">950 141 414</a>.</p>
@@ -292,6 +303,6 @@
       <a href="mailto:rrhh@oficial.pe" target="_blank" rel="noopener noreferrer">Correo</a>
     </nav>
   </footer>
-  <script src="script.js?v=20261114-postulantes"></script>
+  <script src="script.js?v=20261114-enlaces"></script>
 </body>
 </html>
