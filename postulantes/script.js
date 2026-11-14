@@ -136,8 +136,8 @@ const portfolioError = document.getElementById('portfolio-error');
 function validatePortfolioLink() {
   const value = portfolioLink.value.trim();
   portfolioLink.value = value;
-  const valid = !value || (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
-  const message = valid ? '' : 'Introduce un enlace completo a una red social o página web';
+  const valid = !value ? !portfolioLink.required : (value.length <= 2048 && /^https?:\/\/(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?(?:[/?#][^\s]*)?$/i.test(value));
+  const message = valid ? '' : (value ? 'Introduce un enlace completo a una red social o página web' : 'Ingresa tu portafolio para postular a un puesto remoto');
   portfolioLink.setCustomValidity(message);
   portfolioError.textContent = message;
   portfolioError.hidden = valid;
@@ -164,8 +164,6 @@ presentation.addEventListener('input', () => {
 const applicationForm = document.getElementById('application-form');
 const availabilityInputs = [...document.querySelectorAll('[name="horarios_disponibles"]')];
 const availabilityError = document.getElementById('availability-error');
-const positionInputs = [...document.querySelectorAll('[name="puesto"]')];
-const positionError = document.getElementById('position-error');
 const fieldMessages = {
   cv: 'Selecciona tu CV',
   foto: 'Selecciona tu foto',
@@ -210,21 +208,43 @@ applicationForm.addEventListener('input', clearFieldError);
 applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
 
-let positionTouched = false;
+const positionsByModality = {
+  Remoto: ['Asistente', 'Diseñador', 'Creador de contenido', 'Community Manager'],
+  Presencial: ['Encuestadora', 'Volantera', 'Promotora', 'Anfitriona']
+};
+const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
+const positionField = document.getElementById('position-field');
+const position = document.getElementById('position');
+const photoGuidance = document.getElementById('photo-guidance');
 
-function updatePositionValidation(showError = positionTouched) {
-  const hasPosition = positionInputs.some(input => input.checked);
-  positionError.hidden = hasPosition || !showError;
-  positionInputs[0].setAttribute('aria-describedby', 'position-hint position-error');
-  return hasPosition;
+function updateModality() {
+  const modality = applicationForm.elements.modalidad.value;
+  const roles = positionsByModality[modality] || [];
+  const remote = modality === 'Remoto';
+  position.replaceChildren(new Option('Selecciona tu puesto', ''), ...roles.map(role => new Option(role)));
+  position.disabled = !modality;
+  positionField.hidden = !modality;
+  portfolioLink.required = remote;
+  document.getElementById('portfolio-optional').hidden = modality !== 'Presencial';
+  portfolioLink.setCustomValidity('');
+  portfolioError.hidden = true;
+  portfolioLink.removeAttribute('aria-invalid');
+  photoGuidance.hidden = !modality;
+  photoGuidance.textContent = remote ? 'Foto de rostro' : 'Foto de cuerpo completo';
+  photoExampleToggle.hidden = !modality;
+  if (!photoExample.hidden) photoExampleToggle.click();
+  photoExample.classList.toggle('portrait', remote);
+  const example = photoExample.querySelector('img');
+  example.src = remote ? 'assets/foto-rostro-ejemplo.jpg' : 'assets/foto-volantera-ejemplo.jpg';
+  example.alt = remote ? 'Ejemplo de foto de rostro' : 'Ejemplo de foto de cuerpo completo';
+  example.width = remote ? 144 : 300;
+  example.height = remote ? 180 : 533;
+  document.getElementById('modality-error').hidden = true;
+  document.getElementById('position-error').hidden = true;
 }
 
-positionInputs.forEach(input => {
-  input.addEventListener('change', () => {
-    positionTouched = true;
-    updatePositionValidation();
-  });
-});
+modalityInputs.forEach(input => input.addEventListener('change', updateModality));
+
 let availabilityTouched = false;
 
 function updateAvailabilityValidation(showError = availabilityTouched) {
@@ -248,10 +268,15 @@ applicationForm.addEventListener('submit', async event => {
   presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación');
   let firstInvalid = null;
   for (const input of applicationForm.elements) {
-    if (input === positionInputs[0] && !updatePositionValidation(true)) firstInvalid ??= input;
     if (input === availabilityInputs[0] && !updateAvailabilityValidation(true)) firstInvalid ??= input;
     if (!input.willValidate || input.validity.valid) continue;
     firstInvalid ??= input;
+    if (input.name === 'modalidad' || input === position) {
+      const error = document.getElementById(input === position ? 'position-error' : 'modality-error');
+      error.textContent = input === position ? 'Selecciona un puesto' : 'Selecciona una modalidad';
+      error.hidden = false;
+      continue;
+    }
     if (input === portfolioLink || (birthParts.includes(input) && input.validity.customError)) continue;
     let message = fieldMessages[input.name] || input.validationMessage;
     if (!input.validity.valueMissing && (input.name === 'nombres' || input.name === 'apellidos')) {
@@ -307,7 +332,8 @@ applicationForm.addEventListener('submit', async event => {
       form_note: applicationForm.elements.form_note.value,
       nombres: applicationForm.elements.nombres.value.trim(),
       apellidos: applicationForm.elements.apellidos.value.trim(),
-      puesto: positionInputs.filter(input => input.checked).map(input => input.value),
+      modalidad: applicationForm.elements.modalidad.value,
+      puesto: position.value,
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
       distrito: applicationForm.elements.distrito.value,
       whatsapp: applicationForm.elements.whatsapp.value,
@@ -386,7 +412,7 @@ function submitPayload(payload) {
       /^https:\/\/(?:[a-z0-9-]+-)?script\.googleusercontent\.com$/.test(event.origin);
     if (!trustedOrigin || !isSubmissionFrameSource(event.source, frame.contentWindow)) return;
     const message = event.data;
-    if (!message || message.channel !== 'oficial-btl' || message.id !== requestId) return;
+    if (!message || message.channel !== 'oficial-postulantes' || message.id !== requestId) return;
     completed = true;
     cleanup();
     if (message.ok) {
@@ -396,8 +422,7 @@ function submitPayload(payload) {
       portfolioLink.setCustomValidity('');
       portfolioError.hidden = true;
       portfolioLink.removeAttribute('aria-invalid');
-      positionTouched = false;
-      updatePositionValidation(false);
+      updateModality();
       document.querySelectorAll('.file-status').forEach(item => { item.textContent = ''; });
       availabilityTouched = false;
       updateAvailabilityValidation(false);
@@ -415,7 +440,9 @@ function submitPayload(payload) {
         INVALID_NAME: 'Revisa nombres y apellidos. Usa letras, espacios, guiones o apóstrofos.',
         INVALID_BIRTH_DATE: 'Revisa tu fecha de nacimiento.',
         INVALID_DISTRICT: 'Selecciona un distrito de la lista.',
-        INVALID_POSITION: 'Selecciona al menos un puesto de interés.',
+        INVALID_MODALITY: 'Selecciona Remoto o Presencial.',
+        INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
+        PORTFOLIO_REQUIRED: 'Ingresa tu portafolio para postular a un puesto remoto.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
         INVALID_PORTFOLIO_LINK: 'Revisa el enlace de tu portafolio o déjalo vacío.',
         INVALID_PRESENTATION: 'Completa tu presentación con un máximo de 300 caracteres.',
@@ -529,3 +556,6 @@ photoExampleToggle.addEventListener('click', () => {
   photoExampleToggle.setAttribute('aria-expanded', String(!photoExample.hidden));
   photoExampleToggle.textContent = photoExample.hidden ? 'Ver foto de ejemplo' : 'Ocultar foto de ejemplo';
 });
+
+position.addEventListener('change', () => { document.getElementById('position-error').hidden = true; });
+updateModality();

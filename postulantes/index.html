@@ -4,52 +4,55 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
-  <title>Registro de personal BTL | OFICIAL</title>
-  <meta name="description" content="Postula para trabajar como encuestadora, volantera, promotora o anfitriona en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
-  <link rel="canonical" href="https://forms.oficial.pe/btl/">
+  <title>Registro de postulantes | OFICIAL</title>
+  <meta name="description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
+  <link rel="canonical" href="https://forms.oficial.pe/postulantes/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_PE">
   <meta property="og:site_name" content="OFICIAL">
-  <meta property="og:title" content="Registro de personal BTL | OFICIAL">
-  <meta property="og:description" content="Postula para trabajar como encuestadora, volantera, promotora o anfitriona en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
-  <meta property="og:url" content="https://forms.oficial.pe/btl/">
-  <meta property="og:image" content="https://forms.oficial.pe/btl/assets/og-btl.jpg?v=1">
-  <meta property="og:image:secure_url" content="https://forms.oficial.pe/btl/assets/og-btl.jpg?v=1">
+  <meta property="og:title" content="Registro de postulantes | OFICIAL">
+  <meta property="og:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
+  <meta property="og:url" content="https://forms.oficial.pe/postulantes/">
+  <meta property="og:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
+  <meta property="og:image:secure_url" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="300">
   <meta property="og:image:height" content="300">
   <meta property="og:image:alt" content="Postulación BTL de OFICIAL junto a una postulante en una actividad promocional">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Registro de personal BTL | OFICIAL">
-  <meta name="twitter:description" content="Postula para trabajar como encuestadora, volantera, promotora o anfitriona en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
-  <meta name="twitter:image" content="https://forms.oficial.pe/btl/assets/og-btl.jpg?v=1">
-  <link rel="stylesheet" href="styles.css?v=20261110-btl-logo">
+  <meta name="twitter:title" content="Registro de postulantes | OFICIAL">
+  <meta name="twitter:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
+  <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
+  <link rel="stylesheet" href="styles.css?v=20261114-postulantes">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/btl/" aria-label="OFICIAL, recargar el formulario"><img src="assets/oficial.svg" width="70" height="20" alt=""></a>
+    <a class="brand" href="/postulantes/" aria-label="OFICIAL, recargar el formulario"><img src="assets/oficial.svg" width="70" height="20" alt=""></a>
   </header>
 
   <main id="inicio" class="page-shell">
     <div class="btl-photo"><img src="assets/equipo-btl.webp" alt="Equipo de OFICIAL en una activación BTL" width="2048" height="683" fetchpriority="high"></div>
     <section class="intro" aria-labelledby="page-title">
-      <p id="page-title">Registro de personal BTL</p>
+      <p id="page-title">Registro de postulantes</p>
     </section>
 
     <p class="required-key">Todos los campos son obligatorios, excepto los marcados como opcionales</p>
 
     <form class="application" id="application-form">
-      <fieldset class="position-fieldset" aria-describedby="position-hint position-error">
-        <legend>Puesto</legend>
-        <p class="field-hint" id="position-hint">Puedes elegir varios</p>
-        <div class="position-options">
-          <label class="position-option"><input type="checkbox" name="puesto" value="Encuestadora"><span>Encuestadora</span></label>
-          <label class="position-option"><input type="checkbox" name="puesto" value="Volantera"><span>Volantera</span></label>
-          <label class="position-option"><input type="checkbox" name="puesto" value="Promotora"><span>Promotora</span></label>
-          <label class="position-option"><input type="checkbox" name="puesto" value="Anfitriona"><span>Anfitriona</span></label>
+      <fieldset class="position-fieldset" aria-describedby="modality-error">
+        <legend>Modalidad</legend>
+        <div class="modality-options">
+          <label class="position-option"><input type="radio" name="modalidad" value="Remoto" required><span>Remoto</span></label>
+          <label class="position-option"><input type="radio" name="modalidad" value="Presencial" required><span>Presencial</span></label>
         </div>
-        <small class="field-hint field-error position-error" id="position-error" aria-live="polite" hidden>Selecciona al menos un puesto</small>
+        <small class="field-hint field-error position-error" id="modality-error" aria-live="polite" hidden></small>
       </fieldset>
+
+      <div class="text-field position-fieldset" id="position-field" hidden>
+        <label class="section-title" for="position">Puesto</label>
+        <select id="position" name="puesto" required disabled aria-describedby="position-error"></select>
+        <small class="field-hint field-error" id="position-error" aria-live="polite" hidden></small>
+      </div>
 
       <h2 class="section-title">Documentos</h2>
       <div class="upload-grid">
@@ -85,12 +88,13 @@
           </label>
           <p class="file-hint">Solo 1 foto · JPG o PNG · Hasta 2 MB</p>
           <p class="file-status" id="photo-status" aria-live="polite"></p>
-          <button class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver foto de ejemplo</button>
+          <p class="field-hint" id="photo-guidance" hidden></p>
+          <button hidden class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver foto de ejemplo</button>
         </section>
       </div>
 
       <figure class="photo-example" id="photo-example" hidden>
-        <img src="assets/foto-volantera-ejemplo.jpg" alt="Ejemplo de una postulante en una actividad promocional" width="300" height="533" loading="lazy">
+        <div class="photo-example-frame"><img src="assets/foto-volantera-ejemplo.jpg" alt="Ejemplo de foto de cuerpo completo" width="300" height="533" loading="lazy"></div>
         <figcaption>Foto de referencia</figcaption>
       </figure>
 
@@ -183,7 +187,7 @@
           <input name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="___ ___ ___" pattern="9[0-9]{2} [0-9]{3} [0-9]{3}" title="Introduce un celular peruano de 9 dígitos que empiece en 9" required>
         </label>
         <label class="text-field mobile-wide">
-          <span>Portafolio <span class="optional">Opcional</span></span>
+          <span>Portafolio <span class="optional" id="portfolio-optional" hidden>Opcional</span></span>
                     <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-help portfolio-error" inputmode="url" autocomplete="url" pattern="https?://.+" title="Pega un enlace válido a una red social o página web.">
           <small class="field-hint" id="portfolio-help">Enlace a tu red social o página web</small>
           <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
@@ -268,8 +272,8 @@
       </header>
       <div class="privacy-copy" tabindex="0" aria-label="Texto del aviso de privacidad">
         <p><strong>Responsable:</strong> José Luis Muro Porras, persona natural con negocio, identificado con RUC 10455625195 y domiciliado en Calle Los Nogales, Mz. D1, lote 5, Urb. Benjamín Doig Lossio, etapa 2, distrito de La Perla, Provincia Constitucional del Callao, Perú.</p>
-        <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria para los puestos de encuestadora, volantera, promotora o anfitriona, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades relacionadas con el puesto de tu interés. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
-        <p>El formulario solicita el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, presentación, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es opcional. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
+        <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria para el puesto remoto o presencial que selecciones, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades relacionadas con el puesto de tu interés. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
+        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, presentación, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es obligatorio para modalidad remota y opcional para modalidad presencial. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
         <p><strong>Almacenamiento y acceso:</strong> Las respuestas y archivos se almacenan en Google Sheets y Google Drive. Google LLC puede procesarlos en otros países donde opera su infraestructura. José Luis Muro Porras gestionará las postulaciones y tendrá acceso a esos datos.</p>
         <p><strong>Conservación:</strong> Conservaremos tus datos hasta 90 días después del cierre de esta convocatoria y luego los eliminaremos, salvo que una obligación legal exija conservarlos. No los usaremos para futuras convocatorias sin solicitarte una autorización aparte.</p>
         <p><strong>Tus derechos:</strong> Puedes solicitar acceso, rectificación, cancelación u oposición, o retirar tu consentimiento, escribiendo a <a href="mailto:privacidad@oficial.pe">privacidad@oficial.pe</a> o al WhatsApp <a href="https://wa.me/51950141414">950 141 414</a>.</p>
@@ -288,6 +292,6 @@
       <a href="mailto:rrhh@oficial.pe" target="_blank" rel="noopener noreferrer">Correo</a>
     </nav>
   </footer>
-  <script src="script.js?v=20261111-validacion"></script>
+  <script src="script.js?v=20261114-postulantes"></script>
 </body>
 </html>
