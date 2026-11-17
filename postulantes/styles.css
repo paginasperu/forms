@@ -224,11 +224,24 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .application-section > .personal-title { margin-top: 0; }
 .application-section > #position-field { margin-bottom: 0; }
 
+.location-picker { position: relative; }
+.location-options, #location-empty {
+  position: absolute;
+  z-index: 5;
+  inset-inline: 0;
+  top: calc(100% + 6px);
+  box-shadow: 0 4px 14px rgb(17 24 39 / 12%);
+}
+.location-picker[data-side="above"] > :is(.location-options, #location-empty) {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+#location-empty { margin: 0; padding: 8px 12px; background: #fff; border: 1px solid #dce2eb; border-radius: 8px; }
 .location-options {
   margin: 0;
   padding: 0;
   list-style: none;
-  max-height: 248px;
+  max-height: var(--location-height, 248px);
   overflow: auto;
   background: #fff;
   border: 1px solid #dce2eb;

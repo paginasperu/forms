@@ -622,6 +622,21 @@ function closeLocationSuggestions() {
   locationEmpty.textContent = '';
 }
 
+function positionLocationSuggestions() {
+  if (locationOptions.hidden && !locationEmpty.textContent) return;
+  const field = locationInput.getBoundingClientRect();
+  const viewport = window.visualViewport;
+  const top = viewport?.offsetTop ?? 0;
+  const bottom = top + (viewport?.height ?? window.innerHeight);
+  const spaceBelow = bottom - field.bottom - 14;
+  const spaceAbove = field.top - top - 14;
+  const desiredHeight = locationOptions.hidden ? locationEmpty.offsetHeight : Math.min(248, locationOptions.scrollHeight + 2);
+  const openAbove = spaceBelow < desiredHeight && spaceAbove > spaceBelow;
+  const picker = locationInput.parentElement;
+  picker.dataset.side = openAbove ? 'above' : 'below';
+  picker.style.setProperty('--location-height', Math.max(0, Math.min(248, openAbove ? spaceAbove : spaceBelow)) + 'px');
+}
+
 function updateLocationSuggestions() {
   closeLocationSuggestions();
   const query = normalizeLocation(locationInput.value);
@@ -642,6 +657,7 @@ function updateLocationSuggestions() {
   locationOptions.hidden = matches.length === 0;
   locationInput.setAttribute('aria-expanded', String(matches.length > 0));
   if (!matches.length) locationEmpty.textContent = 'No se encontraron distritos';
+  positionLocationSuggestions();
 }
 
 function selectLocation(row) {
@@ -654,6 +670,10 @@ locationInput.addEventListener('input', () => {
   locationInput.setCustomValidity('');
   updateLocationSuggestions();
 });
+window.addEventListener('resize', positionLocationSuggestions);
+window.addEventListener('scroll', positionLocationSuggestions, { passive: true });
+window.visualViewport?.addEventListener('resize', positionLocationSuggestions);
+window.visualViewport?.addEventListener('scroll', positionLocationSuggestions);
 locationInput.addEventListener('focus', updateLocationSuggestions);
 locationInput.addEventListener('blur', closeLocationSuggestions);
 locationOptions.addEventListener('mousedown', event => event.preventDefault());
