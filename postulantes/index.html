@@ -23,7 +23,7 @@
   <meta name="twitter:title" content="Registro de postulantes | OFICIAL">
   <meta name="twitter:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
   <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
-  <link rel="stylesheet" href="styles.css?v=20261114-secciones">
+  <link rel="stylesheet" href="styles.css?v=20261117-distritos-14">
 </head>
 <body>
   <header class="topbar">
@@ -43,8 +43,8 @@
       <fieldset class="position-fieldset" aria-describedby="modality-error">
         <legend>Modalidad</legend>
         <div class="modality-options">
-          <label class="position-option"><input type="radio" name="modalidad" value="Remoto" required><span>Remoto</span></label>
           <label class="position-option"><input type="radio" name="modalidad" value="Presencial" required><span>Presencial</span></label>
+          <label class="position-option"><input type="radio" name="modalidad" value="Remoto" required><span>Remoto</span></label>
         </div>
         <small class="field-hint field-error position-error" id="modality-error" aria-live="polite" hidden></small>
       </fieldset>
@@ -123,11 +123,12 @@
           <input name="fecha_nacimiento" type="hidden">
           <small class="field-hint field-error" id="birthdate-error" aria-live="polite" hidden></small>
         </fieldset>
-        <label class="text-field mobile-wide">
-          <span>Distrito, provincia y departamento</span>
-          <input name="ubicacion" type="text" list="location-options" placeholder="Busca un distrito" autocomplete="off" required>
-          <datalist id="location-options"></datalist>
-        </label>
+        <div class="text-field mobile-wide">
+          <label for="location-input">Distrito, provincia y departamento</label>
+          <input id="location-input" name="ubicacion" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="location-options" placeholder="Busca un distrito" autocomplete="off" required>
+          <ul id="location-options" class="location-options" role="listbox" aria-label="Distritos" hidden></ul>
+          <small id="location-empty" class="field-hint" role="status"></small>
+        </div>
       </div>
 
       </section>
@@ -263,6 +264,6 @@
     </nav>
   </footer>
   <script src="assets/locations.js?v=20261116"></script>
-  <script src="script.js?v=20261116-distrito"></script>
+  <script src="script.js?v=20261117-distritos"></script>
 </body>
 </html>

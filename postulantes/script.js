@@ -207,7 +207,7 @@ function showFieldError(input, message) {
     error.setAttribute('aria-live', 'polite');
     if (input.type === 'file') fileStatus(input.name).after(error);
     else if (input.type === 'checkbox') input.closest('label').after(error);
-    else input.closest('label').append(error);
+    else (input.closest('label') || input.closest('.text-field')).append(error);
     const descriptions = input.getAttribute('aria-describedby');
     input.setAttribute('aria-describedby', [descriptions, id].filter(Boolean).join(' '));
   }
@@ -228,7 +228,7 @@ applicationForm.noValidate = true;
 
 const positionsByModality = {
   Remoto: ['Promotora', 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Asistente administrativo', 'Reclutador'],
-  Presencial: ['Encuestadora', 'Volantera', 'Promotora', 'Anfitriona']
+  Presencial: ['Volantera', 'Encuestadora', 'Promotora', 'Anfitriona']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
 const positionField = document.getElementById('position-field');
@@ -295,7 +295,7 @@ applicationForm.addEventListener('reset', () => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
-  const ubigeo = updateLocationSuggestions();
+  const ubigeo = selectedLocationCode();
   locationInput.setCustomValidity(ubigeo ? '' : fieldMessages.ubicacion);
   validatePortfolioLink();
   rate.setCustomValidity(!rate.value || Number.isSafeInteger(Number(rate.value)) ? '' : fieldMessages.tarifa_hora);
@@ -607,23 +607,85 @@ const districtChoices = Object.entries(peruLocations).map(([code, parts]) => {
   return { code, label, district: normalizeLocation(parts[0]) };
 });
 
+let activeLocation = -1;
+const locationEmpty = document.getElementById('location-empty');
+
+function selectedLocationCode() {
+  return districtChoices.find(choice => choice.label === locationInput.value)?.code;
+}
+
+function closeLocationSuggestions() {
+  activeLocation = -1;
+  locationOptions.hidden = true;
+  locationInput.setAttribute('aria-expanded', 'false');
+  locationInput.removeAttribute('aria-activedescendant');
+  locationEmpty.textContent = '';
+}
+
 function updateLocationSuggestions() {
+  closeLocationSuggestions();
   const query = normalizeLocation(locationInput.value);
-  const selected = districtChoices.find(choice => choice.label === locationInput.value);
-  const matches = query.length >= 2 && !selected ? districtChoices
+  if (query.length < 2 || selectedLocationCode()) return;
+  const matches = districtChoices
     .filter(choice => choice.district.startsWith(query))
     .sort((first, second) => Number(second.district === query) - Number(first.district === query)
       || first.label.localeCompare(second.label, 'es'))
-    .slice(0, 15) : [];
-  locationOptions.replaceChildren(...matches.map(choice => new Option(choice.label)));
-  return selected?.code;
+    .slice(0, 15);
+  locationOptions.replaceChildren(...matches.map(({ code, label }) => {
+    const row = document.createElement('li');
+    row.id = 'district-' + code;
+    row.setAttribute('role', 'option');
+    row.setAttribute('aria-selected', 'false');
+    row.textContent = label;
+    return row;
+  }));
+  locationOptions.hidden = matches.length === 0;
+  locationInput.setAttribute('aria-expanded', String(matches.length > 0));
+  if (!matches.length) locationEmpty.textContent = 'No se encontraron distritos';
+}
+
+function selectLocation(row) {
+  locationInput.value = row.textContent;
+  locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+  locationInput.focus();
 }
 
 locationInput.addEventListener('input', () => {
   locationInput.setCustomValidity('');
   updateLocationSuggestions();
 });
+locationInput.addEventListener('focus', updateLocationSuggestions);
+locationInput.addEventListener('blur', closeLocationSuggestions);
+locationOptions.addEventListener('mousedown', event => event.preventDefault());
+locationOptions.addEventListener('click', event => {
+  const row = event.target.closest('[role="option"]');
+  if (row) selectLocation(row);
+});
+locationInput.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !locationOptions.hidden) {
+    event.preventDefault();
+    closeLocationSuggestions();
+    return;
+  }
+  const direction = { ArrowDown: 1, ArrowUp: -1 }[event.key];
+  if (direction && locationOptions.hidden) updateLocationSuggestions();
+  if (locationOptions.hidden) return;
+  const rows = locationOptions.children;
+  if (event.key === 'Enter' && activeLocation >= 0) {
+    event.preventDefault();
+    selectLocation(rows[activeLocation]);
+  } else if (direction) {
+    event.preventDefault();
+    rows[activeLocation]?.setAttribute('aria-selected', 'false');
+    activeLocation = activeLocation < 0 && direction < 0
+      ? rows.length - 1 : (activeLocation + direction + rows.length) % rows.length;
+    const row = rows[activeLocation];
+    row.setAttribute('aria-selected', 'true');
+    locationInput.setAttribute('aria-activedescendant', row.id);
+    row.scrollIntoView({ block: 'nearest' });
+  }
+});
 applicationForm.addEventListener('reset', () => {
   locationInput.setCustomValidity('');
-  locationOptions.replaceChildren();
+  closeLocationSuggestions();
 });
