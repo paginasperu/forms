@@ -124,64 +124,9 @@
           <small class="field-hint field-error" id="birthdate-error" aria-live="polite" hidden></small>
         </fieldset>
         <label class="text-field mobile-wide">
-          <span>Distrito</span>
-          <select name="distrito" autocomplete="address-level3" required>
-            <option value="" selected disabled>Selecciona tu distrito</option>
-            <optgroup label="Lima Metropolitana">
-              <option>Ancón</option>
-              <option>Ate</option>
-              <option>Barranco</option>
-              <option>Breña</option>
-              <option>Carabayllo</option>
-              <option>Chaclacayo</option>
-              <option>Chorrillos</option>
-              <option>Cieneguilla</option>
-              <option>Comas</option>
-              <option>El Agustino</option>
-              <option>Independencia</option>
-              <option>Jesús María</option>
-              <option>La Molina</option>
-              <option>La Victoria</option>
-              <option>Lima</option>
-              <option>Lince</option>
-              <option>Los Olivos</option>
-              <option>Lurigancho</option>
-              <option>Lurín</option>
-              <option>Magdalena del Mar</option>
-              <option>Miraflores</option>
-              <option>Pachacámac</option>
-              <option>Pucusana</option>
-              <option>Pueblo Libre</option>
-              <option>Puente Piedra</option>
-              <option>Punta Hermosa</option>
-              <option>Punta Negra</option>
-              <option>Rímac</option>
-              <option>San Bartolo</option>
-              <option>San Borja</option>
-              <option>San Isidro</option>
-              <option>San Juan de Lurigancho</option>
-              <option>San Juan de Miraflores</option>
-              <option>San Luis</option>
-              <option>San Martín de Porres</option>
-              <option>San Miguel</option>
-              <option>Santa Anita</option>
-              <option>Santa María del Mar</option>
-              <option>Santa Rosa</option>
-              <option>Santiago de Surco</option>
-              <option>Surquillo</option>
-              <option>Villa El Salvador</option>
-              <option>Villa María del Triunfo</option>
-            </optgroup>
-            <optgroup label="Callao">
-              <option>Bellavista</option>
-              <option>Callao</option>
-              <option>Carmen de la Legua Reynoso</option>
-              <option>La Perla</option>
-              <option>La Punta</option>
-              <option>Mi Perú</option>
-              <option>Ventanilla</option>
-            </optgroup>
-          </select>
+          <span>Distrito, provincia y departamento</span>
+          <input name="ubicacion" type="text" list="location-options" placeholder="Busca un distrito" autocomplete="off" required>
+          <datalist id="location-options"></datalist>
         </label>
       </div>
 
@@ -210,15 +155,15 @@
           <small class="field-hint" id="presentation-help">Describe brevemente lo que te hace diferente</small>
         </label>
         <label class="text-field mobile-wide">
-          <span>Portafolio <span class="optional" id="portfolio-optional" hidden>Opcional</span></span>
-          <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-help portfolio-error" inputmode="url" autocomplete="url" title="Pega un enlace válido a tu portafolio.">
-          <small class="field-hint" id="portfolio-help">Enlace a una muestra de tu trabajo</small>
-          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
-        </label>
-        <label class="text-field mobile-wide">
           <span>Tarifa por hora (S/)</span>
           <input name="tarifa_hora" type="text" inputmode="numeric" pattern="0*[1-9][0-9]*" aria-describedby="rate-help" required>
           <small class="field-hint" id="rate-help">Indica cuánto deseas ganar</small>
+        </label>
+        <label class="text-field mobile-wide">
+          <span>Portafolio <span class="optional">Opcional</span></span>
+          <input name="portafolio" type="url" maxlength="2048" aria-describedby="portfolio-help portfolio-error" inputmode="url" autocomplete="url" title="Pega un enlace válido a tu portafolio.">
+          <small class="field-hint" id="portfolio-help">Enlace a una muestra de tu trabajo</small>
+          <small class="field-hint field-error" id="portfolio-error" aria-live="polite" hidden></small>
         </label>
       </div>
 
@@ -298,7 +243,7 @@
       <div class="privacy-copy" tabindex="0" aria-label="Texto del aviso de privacidad">
         <p><strong>Responsable:</strong> José Luis Muro Porras, persona natural con negocio, identificado con RUC 10455625195 y domiciliado en Calle Los Nogales, Mz. D1, lote 5, Urb. Benjamín Doig Lossio, etapa 2, distrito de La Perla, Provincia Constitucional del Callao, Perú.</p>
         <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria para el puesto remoto o presencial que selecciones, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades relacionadas con el puesto de tu interés. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
-        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, WhatsApp, red social opcional, presentación, tarifa por hora, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es obligatorio para modalidad remota y opcional para modalidad presencial. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
+        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, provincia, departamento, WhatsApp, red social opcional, presentación, tarifa por hora, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es opcional. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
         <p><strong>Almacenamiento y acceso:</strong> Las respuestas y archivos se almacenan en Google Sheets y Google Drive. Google LLC puede procesarlos en otros países donde opera su infraestructura. José Luis Muro Porras gestionará las postulaciones y tendrá acceso a esos datos.</p>
         <p><strong>Conservación:</strong> Conservaremos tus datos hasta 90 días después del cierre de esta convocatoria y luego los eliminaremos, salvo que una obligación legal exija conservarlos. No los usaremos para futuras convocatorias sin solicitarte una autorización aparte.</p>
         <p><strong>Tus derechos:</strong> Puedes solicitar acceso, rectificación, cancelación u oposición, o retirar tu consentimiento, escribiendo a <a href="mailto:privacidad@oficial.pe">privacidad@oficial.pe</a> o al WhatsApp <a href="https://wa.me/51950141414">950 141 414</a>.</p>
@@ -317,6 +262,7 @@
       <a href="mailto:rrhh@oficial.pe" target="_blank" rel="noopener noreferrer">Correo</a>
     </nav>
   </footer>
-  <script src="script.js?v=20261115-puestos"></script>
+  <script src="assets/locations.js?v=20261116"></script>
+  <script src="script.js?v=20261116-distrito"></script>
 </body>
 </html>

@@ -154,8 +154,8 @@ function validateSocialLink() {
 
 function validatePortfolioLink() {
   const value = normalizeProfileLink(portfolioLink);
-  const valid = !value ? !portfolioLink.required : isProfileUrl(value);
-  const message = valid ? '' : (value ? 'Introduce un enlace completo a una red social o página web' : 'Ingresa tu portafolio para postular a un puesto remoto');
+  const valid = !value || isProfileUrl(value);
+  const message = valid ? '' : 'Introduce un enlace completo a una red social o página web';
   portfolioLink.setCustomValidity(message);
   portfolioError.textContent = message;
   portfolioError.hidden = valid;
@@ -188,7 +188,7 @@ const fieldMessages = {
   birth_day: 'Ingresa el día de nacimiento',
   birth_month: 'Selecciona el mes de nacimiento',
   birth_year: 'Ingresa el año de nacimiento',
-  distrito: 'Selecciona tu distrito',
+  ubicacion: 'Elige un distrito de las sugerencias',
   whatsapp: 'Ingresa un celular peruano de 9 dígitos que empiece en 9',
   red_social: 'Ingresa un enlace válido a tu perfil',
   tarifa_hora: 'Ingresa un monto entero mayor que cero',
@@ -227,7 +227,7 @@ applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
 
 const positionsByModality = {
-  Remoto: ['Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Reclutador', 'Asistente administrativo'],
+  Remoto: ['Promotora', 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Asistente administrativo', 'Reclutador'],
   Presencial: ['Encuestadora', 'Volantera', 'Promotora', 'Anfitriona']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
@@ -242,8 +242,6 @@ function updateModality() {
   position.replaceChildren(new Option('Selecciona tu puesto', ''), ...roles.map(role => new Option(role)));
   position.disabled = !modality;
   positionField.hidden = !modality;
-  portfolioLink.required = remote;
-  document.getElementById('portfolio-optional').hidden = modality !== 'Presencial';
   portfolioLink.setCustomValidity('');
   portfolioError.hidden = true;
   portfolioLink.removeAttribute('aria-invalid');
@@ -297,6 +295,8 @@ applicationForm.addEventListener('reset', () => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
+  const ubigeo = updateLocationSuggestions();
+  locationInput.setCustomValidity(ubigeo ? '' : fieldMessages.ubicacion);
   validatePortfolioLink();
   rate.setCustomValidity(!rate.value || Number.isSafeInteger(Number(rate.value)) ? '' : fieldMessages.tarifa_hora);
   validateSocialLink();
@@ -370,7 +370,7 @@ applicationForm.addEventListener('submit', async event => {
       modalidad: applicationForm.elements.modalidad.value,
       puesto: position.value,
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
-      distrito: applicationForm.elements.distrito.value,
+      ubigeo,
       whatsapp: applicationForm.elements.whatsapp.value,
       portafolio: applicationForm.elements.portafolio.value.trim(),
       red_social: socialLink.value,
@@ -480,7 +480,6 @@ function submitPayload(payload) {
         INVALID_DISTRICT: 'Selecciona un distrito de la lista.',
         INVALID_MODALITY: 'Selecciona Remoto o Presencial.',
         INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
-        PORTFOLIO_REQUIRED: 'Ingresa tu portafolio para postular a un puesto remoto.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
         INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social.',
         INVALID_HOURLY_RATE: 'Ingresa una tarifa por hora entera mayor que cero.',
@@ -599,3 +598,32 @@ photoExampleToggle.addEventListener('click', () => {
 
 position.addEventListener('change', () => { document.getElementById('position-error').hidden = true; });
 updateModality();
+
+const locationInput = applicationForm.elements.ubicacion;
+const locationOptions = document.getElementById('location-options');
+const normalizeLocation = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+const districtChoices = Object.entries(peruLocations).map(([code, parts]) => {
+  const label = parts.join(', ');
+  return { code, label, district: normalizeLocation(parts[0]) };
+});
+
+function updateLocationSuggestions() {
+  const query = normalizeLocation(locationInput.value);
+  const selected = districtChoices.find(choice => choice.label === locationInput.value);
+  const matches = query.length >= 2 && !selected ? districtChoices
+    .filter(choice => choice.district.startsWith(query))
+    .sort((first, second) => Number(second.district === query) - Number(first.district === query)
+      || first.label.localeCompare(second.label, 'es'))
+    .slice(0, 15) : [];
+  locationOptions.replaceChildren(...matches.map(choice => new Option(choice.label)));
+  return selected?.code;
+}
+
+locationInput.addEventListener('input', () => {
+  locationInput.setCustomValidity('');
+  updateLocationSuggestions();
+});
+applicationForm.addEventListener('reset', () => {
+  locationInput.setCustomValidity('');
+  locationOptions.replaceChildren();
+});
