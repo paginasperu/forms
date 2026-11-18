@@ -190,10 +190,10 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .section-title, .position-fieldset legend, .availability-fieldset legend { display: block; padding-left: 9px; border-left: 3px solid #1268e8; color: #253247; font-size: 13px; }
 
 /* Imagen panorámica compacta y nota de obligatoriedad. */
-.btl-photo { height: 146px; margin: 0 auto 18px; overflow: hidden; border-radius: 11px; }
-.btl-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+.btl-photo { height: auto; margin: 0 auto 18px; overflow: hidden; border-radius: 11px; }
+.btl-photo img { display: block; width: 100%; height: auto; }
 .required-key { max-width: 560px; margin: -8px auto 16px; color: #697386; font-size: 12px; line-height: 1.45; text-align: center; }
-@media (max-width: 600px) { .btl-photo { height: clamp(106px, 31vw, 122px); margin-bottom: 14px; } .required-key { padding: 0 8px; font-size: 11px; } }
+@media (max-width: 600px) { .btl-photo { margin-bottom: 14px; } .required-key { padding: 0 8px; font-size: 11px; } }
 
 .site-footer { width: min(680px, calc(100% - 36px)); margin: 0 auto; padding: 22px 0 34px; }
 .site-footer nav { display: flex; flex-wrap: wrap; gap: 4px 20px; }
@@ -225,18 +225,18 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .application-section > #position-field { margin-bottom: 0; }
 
 .location-picker { position: relative; }
-.location-options, #location-empty {
+.location-options, .picker-empty {
   position: absolute;
   z-index: 5;
   inset-inline: 0;
   top: calc(100% + 6px);
   box-shadow: 0 4px 14px rgb(17 24 39 / 12%);
 }
-.location-picker[data-side="above"] > :is(.location-options, #location-empty) {
+.location-picker[data-side="above"] > :is(.location-options, .picker-empty) {
   top: auto;
   bottom: calc(100% + 6px);
 }
-#location-empty { margin: 0; padding: 8px 12px; background: #fff; border: 1px solid #dce2eb; border-radius: 8px; }
+.picker-empty { margin: 0; padding: 8px 12px; background: #fff; border: 1px solid #dce2eb; border-radius: 8px; }
 .location-options {
   margin: 0;
   padding: 0;
@@ -258,4 +258,4 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 }
 .location-options li + li { border-top: 1px solid #e8eaef; }
 .location-options li:hover, .location-options [aria-selected="true"] { background: #edf4fd; }
-#location-empty:empty { display: none; }
+.picker-empty:empty { display: none; }

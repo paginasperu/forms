@@ -185,6 +185,7 @@ const fieldMessages = {
   foto: 'Selecciona tu foto',
   nombres: 'Ingresa tus nombres',
   apellidos: 'Ingresa tus apellidos',
+  nacionalidad: 'Selecciona tu nacionalidad',
   birth_day: 'Ingresa el día de nacimiento',
   birth_month: 'Selecciona el mes de nacimiento',
   birth_year: 'Ingresa el año de nacimiento',
@@ -227,8 +228,8 @@ applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
 
 const positionsByModality = {
-  Remoto: ['Promotora', 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Asistente administrativo', 'Reclutador'],
-  Presencial: ['Volantera', 'Encuestadora', 'Promotora', 'Anfitriona']
+  Remoto: [ 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Asistente administrativo', 'Reclutador'],
+  Presencial: ['Volantera', 'Promotora', 'Anfitriona', 'Encuestadora']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
 const positionField = document.getElementById('position-field');
@@ -251,10 +252,10 @@ function updateModality() {
   if (!photoExample.hidden) photoExampleToggle.click();
   photoExample.classList.toggle('portrait', remote);
   const example = photoExample.querySelector('img');
-  example.src = remote ? 'assets/foto-rostro-ejemplo.jpg' : 'assets/foto-volantera-ejemplo.jpg';
+  example.src = remote ? 'assets/foto-rostro-ejemplo.jpg?v=20261118-ia' : 'assets/foto-volantera-ejemplo.jpg?v=20261118-ia';
   example.alt = remote ? 'Ejemplo de foto de rostro' : 'Ejemplo de foto de cuerpo completo';
-  example.width = remote ? 144 : 300;
-  example.height = remote ? 180 : 533;
+  example.width = remote ? 288 : 480;
+  example.height = remote ? 360 : 720;
   document.getElementById('modality-error').hidden = true;
   document.getElementById('position-error').hidden = true;
 }
@@ -295,6 +296,7 @@ applicationForm.addEventListener('reset', () => {
 applicationForm.addEventListener('submit', async event => {
   event.preventDefault();
   validateAdultAge();
+  nationalityInput.setCustomValidity(nationalityPicker.selectedCode() ? '' : fieldMessages.nacionalidad);
   const ubigeo = selectedLocationCode();
   locationInput.setCustomValidity(ubigeo ? '' : fieldMessages.ubicacion);
   validatePortfolioLink();
@@ -367,6 +369,7 @@ applicationForm.addEventListener('submit', async event => {
       form_note: applicationForm.elements.form_note.value,
       nombres: applicationForm.elements.nombres.value.trim(),
       apellidos: applicationForm.elements.apellidos.value.trim(),
+      nacionalidad: nationalityPicker.selectedCode(),
       modalidad: applicationForm.elements.modalidad.value,
       puesto: position.value,
       fecha_nacimiento: applicationForm.elements.fecha_nacimiento.value,
@@ -479,6 +482,8 @@ function submitPayload(payload) {
         INVALID_BIRTH_DATE: 'Revisa tu fecha de nacimiento.',
         INVALID_DISTRICT: 'Selecciona un distrito de la lista.',
         INVALID_MODALITY: 'Selecciona Remoto o Presencial.',
+        INVALID_NATIONALITY: 'Selecciona tu nacionalidad de la lista.',
+        APPLICATION_EXISTS: 'Ya tienes una postulación registrada en esta modalidad con este WhatsApp. Puedes postular a la otra modalidad.',
         INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
         INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social.',
@@ -599,19 +604,15 @@ photoExampleToggle.addEventListener('click', () => {
 position.addEventListener('change', () => { document.getElementById('position-error').hidden = true; });
 updateModality();
 
-const locationInput = applicationForm.elements.ubicacion;
-const locationOptions = document.getElementById('location-options');
-const normalizeLocation = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
-const districtChoices = Object.entries(peruLocations).map(([code, parts]) => {
-  const label = parts.join(', ');
-  return { code, label, district: normalizeLocation(parts[0]) };
-});
+const normalizeChoice = value => value.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
 
+// Ambos buscadores comparten selección, teclado y posición flotante.
+function setupChoicePicker(locationInput, locationOptions, locationEmpty, choices, minLength = 0, preferPeru = false) {
 let activeLocation = -1;
-const locationEmpty = document.getElementById('location-empty');
+
 
 function selectedLocationCode() {
-  return districtChoices.find(choice => choice.label === locationInput.value)?.code;
+  return choices.find(choice => choice.label === locationInput.value)?.code;
 }
 
 function closeLocationSuggestions() {
@@ -639,16 +640,17 @@ function positionLocationSuggestions() {
 
 function updateLocationSuggestions() {
   closeLocationSuggestions();
-  const query = normalizeLocation(locationInput.value);
-  if (query.length < 2 || selectedLocationCode()) return;
-  const matches = districtChoices
-    .filter(choice => choice.district.startsWith(query))
-    .sort((first, second) => Number(second.district === query) - Number(first.district === query)
+  const query = normalizeChoice(locationInput.value);
+  if (query.length < minLength || (query && selectedLocationCode())) return;
+  const matches = choices
+    .filter(choice => choice.search.startsWith(query))
+    .sort((first, second) => Number(second.search === query) - Number(first.search === query)
+      || (!query && preferPeru ? Number(second.code === 'PE') - Number(first.code === 'PE') : 0)
       || first.label.localeCompare(second.label, 'es'))
-    .slice(0, 15);
+    .slice(0, minLength ? 15 : choices.length);
   locationOptions.replaceChildren(...matches.map(({ code, label }) => {
     const row = document.createElement('li');
-    row.id = 'district-' + code;
+    row.id = locationOptions.id + '-' + code;
     row.setAttribute('role', 'option');
     row.setAttribute('aria-selected', 'false');
     row.textContent = label;
@@ -656,7 +658,7 @@ function updateLocationSuggestions() {
   }));
   locationOptions.hidden = matches.length === 0;
   locationInput.setAttribute('aria-expanded', String(matches.length > 0));
-  if (!matches.length) locationEmpty.textContent = 'No se encontraron distritos';
+  if (!matches.length) locationEmpty.textContent = 'No se encontraron resultados';
   positionLocationSuggestions();
 }
 
@@ -709,3 +711,19 @@ applicationForm.addEventListener('reset', () => {
   locationInput.setCustomValidity('');
   closeLocationSuggestions();
 });
+
+  return { selectedCode: selectedLocationCode };
+}
+
+const locationInput = applicationForm.elements.ubicacion;
+const districtChoices = Object.entries(peruLocations).map(([code, parts]) => ({
+  code, label: parts.join(', '), search: normalizeChoice(parts[0])
+}));
+const locationPicker = setupChoicePicker(locationInput, document.getElementById('location-options'),
+  document.getElementById('location-empty'), districtChoices, 2);
+function selectedLocationCode() { return locationPicker.selectedCode(); }
+
+const countryChoices = [{"code":"AF","label":"Afganistán"},{"code":"AL","label":"Albania"},{"code":"DE","label":"Alemania"},{"code":"AD","label":"Andorra"},{"code":"AO","label":"Angola"},{"code":"AI","label":"Anguila"},{"code":"AQ","label":"Antártida"},{"code":"AG","label":"Antigua y Barbuda"},{"code":"SA","label":"Arabia Saudí"},{"code":"DZ","label":"Argelia"},{"code":"AR","label":"Argentina"},{"code":"AM","label":"Armenia"},{"code":"AW","label":"Aruba"},{"code":"AU","label":"Australia"},{"code":"AT","label":"Austria"},{"code":"AZ","label":"Azerbaiyán"},{"code":"BS","label":"Bahamas"},{"code":"BD","label":"Bangladés"},{"code":"BB","label":"Barbados"},{"code":"BH","label":"Baréin"},{"code":"BE","label":"Bélgica"},{"code":"BZ","label":"Belice"},{"code":"BJ","label":"Benín"},{"code":"BM","label":"Bermudas"},{"code":"BY","label":"Bielorrusia"},{"code":"BO","label":"Bolivia"},{"code":"BA","label":"Bosnia y Herzegovina"},{"code":"BW","label":"Botsuana"},{"code":"BR","label":"Brasil"},{"code":"BN","label":"Brunéi"},{"code":"BG","label":"Bulgaria"},{"code":"BF","label":"Burkina Faso"},{"code":"BI","label":"Burundi"},{"code":"BT","label":"Bután"},{"code":"CV","label":"Cabo Verde"},{"code":"KH","label":"Camboya"},{"code":"CM","label":"Camerún"},{"code":"CA","label":"Canadá"},{"code":"BQ","label":"Caribe neerlandés"},{"code":"QA","label":"Catar"},{"code":"TD","label":"Chad"},{"code":"CZ","label":"Chequia"},{"code":"CL","label":"Chile"},{"code":"CN","label":"China"},{"code":"CY","label":"Chipre"},{"code":"VA","label":"Ciudad del Vaticano"},{"code":"CO","label":"Colombia"},{"code":"KM","label":"Comoras"},{"code":"CG","label":"Congo"},{"code":"KP","label":"Corea del Norte"},{"code":"KR","label":"Corea del Sur"},{"code":"CR","label":"Costa Rica"},{"code":"CI","label":"Côte d’Ivoire"},{"code":"HR","label":"Croacia"},{"code":"CU","label":"Cuba"},{"code":"CW","label":"Curazao"},{"code":"DK","label":"Dinamarca"},{"code":"DM","label":"Dominica"},{"code":"EC","label":"Ecuador"},{"code":"EG","label":"Egipto"},{"code":"SV","label":"El Salvador"},{"code":"AE","label":"Emiratos Árabes Unidos"},{"code":"ER","label":"Eritrea"},{"code":"SK","label":"Eslovaquia"},{"code":"SI","label":"Eslovenia"},{"code":"ES","label":"España"},{"code":"US","label":"Estados Unidos"},{"code":"EE","label":"Estonia"},{"code":"SZ","label":"Esuatini"},{"code":"ET","label":"Etiopía"},{"code":"PH","label":"Filipinas"},{"code":"FI","label":"Finlandia"},{"code":"FJ","label":"Fiyi"},{"code":"FR","label":"Francia"},{"code":"GA","label":"Gabón"},{"code":"GM","label":"Gambia"},{"code":"GE","label":"Georgia"},{"code":"GH","label":"Ghana"},{"code":"GI","label":"Gibraltar"},{"code":"GD","label":"Granada"},{"code":"GR","label":"Grecia"},{"code":"GL","label":"Groenlandia"},{"code":"GP","label":"Guadalupe"},{"code":"GU","label":"Guam"},{"code":"GT","label":"Guatemala"},{"code":"GF","label":"Guayana Francesa"},{"code":"GG","label":"Guernesey"},{"code":"GN","label":"Guinea"},{"code":"GQ","label":"Guinea Ecuatorial"},{"code":"GW","label":"Guinea-Bisáu"},{"code":"GY","label":"Guyana"},{"code":"HT","label":"Haití"},{"code":"HN","label":"Honduras"},{"code":"HU","label":"Hungría"},{"code":"IN","label":"India"},{"code":"ID","label":"Indonesia"},{"code":"IQ","label":"Irak"},{"code":"IR","label":"Irán"},{"code":"IE","label":"Irlanda"},{"code":"BV","label":"Isla Bouvet"},{"code":"IM","label":"Isla de Man"},{"code":"CX","label":"Isla de Navidad"},{"code":"NF","label":"Isla Norfolk"},{"code":"IS","label":"Islandia"},{"code":"AX","label":"Islas Aland"},{"code":"KY","label":"Islas Caimán"},{"code":"CC","label":"Islas Cocos"},{"code":"CK","label":"Islas Cook"},{"code":"FO","label":"Islas Feroe"},{"code":"GS","label":"Islas Georgia del Sur y Sandwich del Sur"},{"code":"HM","label":"Islas Heard y McDonald"},{"code":"FK","label":"Islas Malvinas"},{"code":"MP","label":"Islas Marianas del Norte"},{"code":"MH","label":"Islas Marshall"},{"code":"UM","label":"Islas menores alejadas de EE. UU."},{"code":"PN","label":"Islas Pitcairn"},{"code":"SB","label":"Islas Salomón"},{"code":"TC","label":"Islas Turcas y Caicos"},{"code":"VG","label":"Islas Vírgenes Británicas"},{"code":"VI","label":"Islas Vírgenes de EE. UU."},{"code":"IL","label":"Israel"},{"code":"IT","label":"Italia"},{"code":"JM","label":"Jamaica"},{"code":"JP","label":"Japón"},{"code":"JE","label":"Jersey"},{"code":"JO","label":"Jordania"},{"code":"KZ","label":"Kazajistán"},{"code":"KE","label":"Kenia"},{"code":"KG","label":"Kirguistán"},{"code":"KI","label":"Kiribati"},{"code":"KW","label":"Kuwait"},{"code":"LA","label":"Laos"},{"code":"LS","label":"Lesoto"},{"code":"LV","label":"Letonia"},{"code":"LB","label":"Líbano"},{"code":"LR","label":"Liberia"},{"code":"LY","label":"Libia"},{"code":"LI","label":"Liechtenstein"},{"code":"LT","label":"Lituania"},{"code":"LU","label":"Luxemburgo"},{"code":"MK","label":"Macedonia del Norte"},{"code":"MG","label":"Madagascar"},{"code":"MY","label":"Malasia"},{"code":"MW","label":"Malaui"},{"code":"MV","label":"Maldivas"},{"code":"ML","label":"Mali"},{"code":"MT","label":"Malta"},{"code":"MA","label":"Marruecos"},{"code":"MQ","label":"Martinica"},{"code":"MU","label":"Mauricio"},{"code":"MR","label":"Mauritania"},{"code":"YT","label":"Mayotte"},{"code":"MX","label":"México"},{"code":"FM","label":"Micronesia"},{"code":"MD","label":"Moldavia"},{"code":"MC","label":"Mónaco"},{"code":"MN","label":"Mongolia"},{"code":"ME","label":"Montenegro"},{"code":"MS","label":"Montserrat"},{"code":"MZ","label":"Mozambique"},{"code":"MM","label":"Myanmar (Birmania)"},{"code":"NA","label":"Namibia"},{"code":"NR","label":"Nauru"},{"code":"NP","label":"Nepal"},{"code":"NI","label":"Nicaragua"},{"code":"NE","label":"Níger"},{"code":"NG","label":"Nigeria"},{"code":"NU","label":"Niue"},{"code":"NO","label":"Noruega"},{"code":"NC","label":"Nueva Caledonia"},{"code":"NZ","label":"Nueva Zelanda"},{"code":"OM","label":"Omán"},{"code":"NL","label":"Países Bajos"},{"code":"PK","label":"Pakistán"},{"code":"PW","label":"Palaos"},{"code":"PA","label":"Panamá"},{"code":"PG","label":"Papúa Nueva Guinea"},{"code":"PY","label":"Paraguay"},{"code":"PE","label":"Perú"},{"code":"PF","label":"Polinesia Francesa"},{"code":"PL","label":"Polonia"},{"code":"PT","label":"Portugal"},{"code":"PR","label":"Puerto Rico"},{"code":"HK","label":"RAE de Hong Kong (China)"},{"code":"MO","label":"RAE de Macao (China)"},{"code":"GB","label":"Reino Unido"},{"code":"CF","label":"República Centroafricana"},{"code":"CD","label":"República Democrática del Congo"},{"code":"DO","label":"República Dominicana"},{"code":"RE","label":"Reunión"},{"code":"RW","label":"Ruanda"},{"code":"RO","label":"Rumanía"},{"code":"RU","label":"Rusia"},{"code":"EH","label":"Sáhara Occidental"},{"code":"WS","label":"Samoa"},{"code":"AS","label":"Samoa Americana"},{"code":"BL","label":"San Bartolomé"},{"code":"KN","label":"San Cristóbal y Nieves"},{"code":"SM","label":"San Marino"},{"code":"MF","label":"San Martín"},{"code":"PM","label":"San Pedro y Miquelón"},{"code":"VC","label":"San Vicente y las Granadinas"},{"code":"SH","label":"Santa Elena"},{"code":"LC","label":"Santa Lucía"},{"code":"ST","label":"Santo Tomé y Príncipe"},{"code":"SN","label":"Senegal"},{"code":"RS","label":"Serbia"},{"code":"SC","label":"Seychelles"},{"code":"SL","label":"Sierra Leona"},{"code":"SG","label":"Singapur"},{"code":"SX","label":"Sint Maarten"},{"code":"SY","label":"Siria"},{"code":"SO","label":"Somalia"},{"code":"LK","label":"Sri Lanka"},{"code":"ZA","label":"Sudáfrica"},{"code":"SD","label":"Sudán"},{"code":"SS","label":"Sudán del Sur"},{"code":"SE","label":"Suecia"},{"code":"CH","label":"Suiza"},{"code":"SR","label":"Surinam"},{"code":"SJ","label":"Svalbard y Jan Mayen"},{"code":"TH","label":"Tailandia"},{"code":"TW","label":"Taiwán"},{"code":"TZ","label":"Tanzania"},{"code":"TJ","label":"Tayikistán"},{"code":"IO","label":"Territorio Británico del Océano Índico"},{"code":"TF","label":"Territorios Australes Franceses"},{"code":"PS","label":"Territorios Palestinos"},{"code":"TL","label":"Timor-Leste"},{"code":"TG","label":"Togo"},{"code":"TK","label":"Tokelau"},{"code":"TO","label":"Tonga"},{"code":"TT","label":"Trinidad y Tobago"},{"code":"TN","label":"Túnez"},{"code":"TM","label":"Turkmenistán"},{"code":"TR","label":"Turquía"},{"code":"TV","label":"Tuvalu"},{"code":"UA","label":"Ucrania"},{"code":"UG","label":"Uganda"},{"code":"UY","label":"Uruguay"},{"code":"UZ","label":"Uzbekistán"},{"code":"VU","label":"Vanuatu"},{"code":"VE","label":"Venezuela"},{"code":"VN","label":"Vietnam"},{"code":"WF","label":"Wallis y Futuna"},{"code":"YE","label":"Yemen"},{"code":"DJ","label":"Yibuti"},{"code":"ZM","label":"Zambia"},{"code":"ZW","label":"Zimbabue"}].map(choice => ({ ...choice, search: normalizeChoice(choice.label) }));
+const nationalityInput = applicationForm.elements.nacionalidad;
+const nationalityPicker = setupChoicePicker(nationalityInput, document.getElementById('nationality-options'),
+  document.getElementById('nationality-empty'), countryChoices, 0, true);

@@ -5,25 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f7fb">
   <title>Registro de postulantes | OFICIAL</title>
-  <meta name="description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
+  <meta name="description" content="Postula a puestos presenciales o remotos en OFICIAL.">
   <link rel="canonical" href="https://forms.oficial.pe/postulantes/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="es_PE">
   <meta property="og:site_name" content="OFICIAL">
   <meta property="og:title" content="Registro de postulantes | OFICIAL">
-  <meta property="og:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
+  <meta property="og:description" content="Postula a puestos presenciales o remotos en OFICIAL.">
   <meta property="og:url" content="https://forms.oficial.pe/postulantes/">
-  <meta property="og:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
-  <meta property="og:image:secure_url" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
+  <meta property="og:image" content="https://forms.oficial.pe/postulantes/assets/og-postulantes.jpg?v=20261118">
+  <meta property="og:image:secure_url" content="https://forms.oficial.pe/postulantes/assets/og-postulantes.jpg?v=20261118">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="og:image:width" content="300">
-  <meta property="og:image:height" content="300">
-  <meta property="og:image:alt" content="Postulación BTL de OFICIAL junto a una postulante en una actividad promocional">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Imagen generada con IA de un equipo de agencia con mujeres y hombres">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Registro de postulantes | OFICIAL">
-  <meta name="twitter:description" content="Postula a puestos remotos o presenciales en OFICIAL. Completa el formulario y comparte tu disponibilidad.">
-  <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-btl.jpg?v=1">
-  <link rel="stylesheet" href="styles.css?v=20261117-lista-flotante">
+  <meta name="twitter:description" content="Postula a puestos presenciales o remotos en OFICIAL.">
+  <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-postulantes.jpg?v=20261118">
+  <link rel="stylesheet" href="styles.css?v=20261118-equipo">
 </head>
 <body>
   <header class="topbar">
@@ -31,7 +31,7 @@
   </header>
 
   <main id="inicio" class="page-shell">
-    <div class="btl-photo"><img src="assets/equipo-btl.webp" alt="Equipo de OFICIAL en una activación BTL" width="2048" height="683" fetchpriority="high"></div>
+    <div class="btl-photo"><img src="assets/equipo-btl.webp?v=20261118-equipo1360" alt="Imagen generada con IA de un equipo de agencia, con mujeres y hombres" width="1360" height="454" fetchpriority="high"></div>
     <section class="intro" aria-labelledby="page-title">
       <p id="page-title">Registro de postulantes</p>
     </section>
@@ -97,7 +97,7 @@
       </div>
 
       <figure class="photo-example" id="photo-example" hidden>
-        <div class="photo-example-frame"><img src="assets/foto-volantera-ejemplo.jpg" alt="Ejemplo de foto de cuerpo completo" width="300" height="533" loading="lazy"></div>
+        <div class="photo-example-frame"><img src="assets/foto-volantera-ejemplo.jpg?v=20261118-ia" alt="Ejemplo de foto de cuerpo completo" width="480" height="720" loading="lazy"></div>
         <figcaption>Foto de referencia</figcaption>
       </figure>
 
@@ -113,6 +113,14 @@
           <span>Apellidos</span>
           <input name="apellidos" type="text" autocomplete="family-name" pattern="[\p{L}\p{M}]+(?:[\s\-][\p{L}\p{M}]+)*" minlength="2" maxlength="80" title="Usa letras, espacios o guiones." required>
         </label>
+        <div class="text-field mobile-wide">
+          <label for="nationality-input">Nacionalidad</label>
+          <div class="location-picker">
+            <input id="nationality-input" name="nacionalidad" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="nationality-options" placeholder="Busca un país" autocomplete="off" required>
+            <ul id="nationality-options" class="location-options" role="listbox" aria-label="Países" hidden></ul>
+            <small id="nationality-empty" class="field-hint picker-empty" role="status"></small>
+          </div>
+        </div>
         <fieldset class="birthdate-field" aria-describedby="birthdate-error">
           <legend>Fecha de nacimiento</legend>
           <div class="birthdate-parts">
@@ -123,12 +131,12 @@
           <input name="fecha_nacimiento" type="hidden">
           <small class="field-hint field-error" id="birthdate-error" aria-live="polite" hidden></small>
         </fieldset>
-        <div class="text-field mobile-wide">
+        <div class="text-field mobile-wide full-width">
           <label for="location-input">Distrito, provincia y departamento</label>
           <div class="location-picker">
             <input id="location-input" name="ubicacion" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="location-options" placeholder="Busca un distrito" autocomplete="off" required>
             <ul id="location-options" class="location-options" role="listbox" aria-label="Distritos" hidden></ul>
-            <small id="location-empty" class="field-hint" role="status"></small>
+            <small id="location-empty" class="field-hint picker-empty" role="status"></small>
           </div>
         </div>
       </div>
@@ -246,7 +254,7 @@
       <div class="privacy-copy" tabindex="0" aria-label="Texto del aviso de privacidad">
         <p><strong>Responsable:</strong> José Luis Muro Porras, persona natural con negocio, identificado con RUC 10455625195 y domiciliado en Calle Los Nogales, Mz. D1, lote 5, Urb. Benjamín Doig Lossio, etapa 2, distrito de La Perla, Provincia Constitucional del Callao, Perú.</p>
         <p><strong>Finalidad y datos:</strong> Usaremos tus datos para evaluar tu postulación a esta convocatoria para el puesto remoto o presencial que selecciones, verificar el requisito mínimo de 18 años —sin límite máximo de edad—, revisar tu experiencia y presentación, y contactarte para coordinar una entrevista por videollamada y las actividades relacionadas con el puesto de tu interés. La fotografía se revisará como parte de la evaluación; no se publicará en el directorio ni se compartirá con los negocios anunciantes.</p>
-        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, fecha de nacimiento, distrito, provincia, departamento, WhatsApp, red social opcional, presentación, tarifa por hora, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es opcional. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
+        <p>El formulario solicita la modalidad y el puesto de interés, nombres, apellidos, nacionalidad, fecha de nacimiento, distrito, provincia, departamento, WhatsApp, red social opcional, presentación, tarifa por hora, horarios disponibles, CV y una fotografía. El portafolio, que puede incluir un enlace a una red social o página web, es opcional. Los datos solicitados como obligatorios son necesarios para tramitar la postulación.</p>
         <p><strong>Almacenamiento y acceso:</strong> Las respuestas y archivos se almacenan en Google Sheets y Google Drive. Google LLC puede procesarlos en otros países donde opera su infraestructura. José Luis Muro Porras gestionará las postulaciones y tendrá acceso a esos datos.</p>
         <p><strong>Conservación:</strong> Conservaremos tus datos hasta 90 días después del cierre de esta convocatoria y luego los eliminaremos, salvo que una obligación legal exija conservarlos. No los usaremos para futuras convocatorias sin solicitarte una autorización aparte.</p>
         <p><strong>Tus derechos:</strong> Puedes solicitar acceso, rectificación, cancelación u oposición, o retirar tu consentimiento, escribiendo a <a href="mailto:privacidad@oficial.pe">privacidad@oficial.pe</a> o al WhatsApp <a href="https://wa.me/51950141414">950 141 414</a>.</p>
@@ -266,6 +274,6 @@
     </nav>
   </footer>
   <script src="assets/locations.js?v=20261116"></script>
-  <script src="script.js?v=20261117-lista-flotante"></script>
+  <script src="script.js?v=20261118-fotos"></script>
 </body>
 </html>
