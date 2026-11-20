@@ -271,5 +271,4 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .application-details { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: 14px; }
 .application-details[hidden] { display: none; }
 .modality-prompt { margin: 0; padding: 0 8px; color: #4f596a; font-size: 13px; text-align: center; }
-.modality-change-notice { margin: 0; padding: 10px 14px; border-radius: 8px; background: #edf4ff; color: #253247; font-size: 13px; line-height: 1.5; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }

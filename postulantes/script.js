@@ -242,12 +242,10 @@ const position = document.getElementById('position');
 const photoGuidance = document.getElementById('photo-guidance');
 const applicationDetails = document.getElementById('application-details');
 const modalityPrompt = document.getElementById('modality-prompt');
-const modalityChangeNotice = document.getElementById('modality-change-notice');
 let previousModality = '';
 
 applicationForm.addEventListener('reset', () => {
   previousModality = '';
-  modalityChangeNotice.hidden = true;
   queueMicrotask(updateModality);
 });
 
@@ -264,10 +262,6 @@ function updateModality() {
     photoInput.setCustomValidity('');
     photoInput.dispatchEvent(new Event('change', { bubbles: true }));
     photoInput.closest('.file-picker').querySelector('.picker-label').textContent = 'Subir';
-    modalityChangeNotice.textContent = remote
-      ? 'Cambiaste a Remoto. Selecciona de nuevo el puesto y una foto de rostro. Tus demás datos se conservan.'
-      : 'Cambiaste a Presencial. Selecciona de nuevo el puesto y una foto de cuerpo completo. Tus demás datos se conservan.';
-    modalityChangeNotice.hidden = false;
   }
   previousModality = modality;
   position.replaceChildren(new Option('Selecciona tu puesto', ''), ...roles.map(role => new Option(role)));
