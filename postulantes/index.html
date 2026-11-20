@@ -23,7 +23,7 @@
   <meta name="twitter:title" content="Registro de postulantes | OFICIAL">
   <meta name="twitter:description" content="Postula a puestos presenciales o remotos en OFICIAL.">
   <meta name="twitter:image" content="https://forms.oficial.pe/postulantes/assets/og-postulantes.jpg?v=20261118">
-  <link rel="stylesheet" href="styles.css?v=20261118-equipo">
+  <link rel="stylesheet" href="styles.css?v=20261120-documentos">
 </head>
 <body>
   <header class="topbar">
@@ -36,7 +36,7 @@
       <p id="page-title">Registro de postulantes</p>
     </section>
 
-    <p class="required-key">Todos los campos son obligatorios, excepto los marcados como opcionales</p>
+    <p class="required-key">Todos los campos son obligatorios, excepto los marcados como «Opcional»</p>
 
     <form class="application" id="application-form">
       <section class="application-section">
@@ -56,6 +56,10 @@
       </div>
 
       </section>
+      <p class="modality-prompt" id="modality-prompt">Elige una modalidad para completar tu postulación.</p>
+      <p class="modality-change-notice" id="modality-change-notice" role="status" hidden></p>
+      <fieldset class="application-details" id="application-details" disabled hidden>
+      <legend class="visually-hidden">Datos de la postulación</legend>
       <section class="application-section">
       <h2 class="section-title">Documentos</h2>
       <div class="upload-grid">
@@ -76,7 +80,7 @@
           <p class="file-status" id="cv-status" aria-live="polite"></p>
         </section>
 
-        <section class="upload-card" aria-labelledby="photo-title">
+        <section class="upload-card photo-upload-card" aria-labelledby="photo-title">
           <div class="upload-heading">
             <div class="upload-icon photo-icon" aria-hidden="true">
               <svg viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="20" rx="3" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="13" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="m6 23 6.4-6 4.1 3.6 4.8-5 4.7 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -85,14 +89,14 @@
               <h3 id="photo-title">Foto</h3>
             </div>
           </div>
+          <div class="photo-requirements" id="photo-guidance" hidden></div>
+          <button hidden class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver foto de ejemplo</button>
           <label class="file-picker" for="photo-file" aria-label="Seleccionar una foto">
             <span class="picker-label">Subir</span>
-            <input id="photo-file" name="foto" type="file" accept=".jpg,.jpeg,.jfif,.png,image/jpeg,image/png" required>
+            <input id="photo-file" name="foto" type="file" aria-describedby="photo-guidance photo-file-hint" accept=".jpg,.jpeg,.jfif,.png,image/jpeg,image/png" required>
           </label>
-          <p class="file-hint">Solo 1 foto · JPG o PNG · Hasta 2 MB</p>
+          <p class="file-hint" id="photo-file-hint">Solo 1 foto · JPG o PNG · Hasta 2 MB</p>
           <p class="file-status" id="photo-status" aria-live="polite"></p>
-          <p class="field-hint" id="photo-guidance" hidden></p>
-          <button hidden class="example-link" id="photo-example-toggle" type="button" aria-expanded="false" aria-controls="photo-example">Ver foto de ejemplo</button>
         </section>
       </div>
 
@@ -242,6 +246,7 @@
         <p class="form-status" id="form-status" role="status" aria-live="polite" hidden></p>
       </div>
       </section>
+      </fieldset>
       <label class="honeypot-field" aria-hidden="true">Deja este campo vacío
         <input type="text" name="form_note" tabindex="-1" autocomplete="off">
       </label>
@@ -274,6 +279,6 @@
     </nav>
   </footer>
   <script src="assets/locations.js?v=20261116"></script>
-  <script src="script.js?v=20261120-limites"></script>
+  <script src="script.js?v=20261120-foto-breve"></script>
 </body>
 </html>

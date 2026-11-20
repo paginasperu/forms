@@ -65,12 +65,15 @@ function fileStatus(field) {
 for (const field of Object.keys(fileRules)) {
   const input = document.querySelector(`[name="${field}"]`);
   const status = fileStatus(field);
-  input.setAttribute('aria-describedby', status.id);
+  input.setAttribute('aria-describedby', [input.getAttribute('aria-describedby'), status.id].filter(Boolean).join(' '));
   const pickerLabel = input.closest('.file-picker').querySelector('.picker-label');
   let selection = 0;
   input.form.addEventListener('reset', () => {
     selection++;
     pickerLabel.textContent = 'Subir';
+    status.textContent = '';
+    status.classList.remove('error');
+    input.removeAttribute('aria-invalid');
   });
   input.addEventListener('change', async () => {
     const current = ++selection;
@@ -231,17 +234,42 @@ applicationForm.noValidate = true;
 
 const positionsByModality = {
   Remoto: [ 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Asistente administrativo', 'Reclutador'],
-  Presencial: ['Volantera', 'Promotora', 'Anfitriona', 'Encuestadora']
+  Presencial: ['Volantera', 'Anfitriona', 'Encuestadora', 'Promotora']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
 const positionField = document.getElementById('position-field');
 const position = document.getElementById('position');
 const photoGuidance = document.getElementById('photo-guidance');
+const applicationDetails = document.getElementById('application-details');
+const modalityPrompt = document.getElementById('modality-prompt');
+const modalityChangeNotice = document.getElementById('modality-change-notice');
+let previousModality = '';
+
+applicationForm.addEventListener('reset', () => {
+  previousModality = '';
+  modalityChangeNotice.hidden = true;
+  queueMicrotask(updateModality);
+});
 
 function updateModality() {
   const modality = applicationForm.elements.modalidad.value;
   const roles = positionsByModality[modality] || [];
   const remote = modality === 'Remoto';
+  applicationDetails.hidden = !modality;
+  applicationDetails.disabled = !modality;
+  modalityPrompt.hidden = Boolean(modality);
+  if (previousModality && modality && previousModality !== modality) {
+    const photoInput = applicationForm.elements.foto;
+    photoInput.value = '';
+    photoInput.setCustomValidity('');
+    photoInput.dispatchEvent(new Event('change', { bubbles: true }));
+    photoInput.closest('.file-picker').querySelector('.picker-label').textContent = 'Subir';
+    modalityChangeNotice.textContent = remote
+      ? 'Cambiaste a Remoto. Selecciona de nuevo el puesto y una foto de rostro. Tus demás datos se conservan.'
+      : 'Cambiaste a Presencial. Selecciona de nuevo el puesto y una foto de cuerpo completo. Tus demás datos se conservan.';
+    modalityChangeNotice.hidden = false;
+  }
+  previousModality = modality;
   position.replaceChildren(new Option('Selecciona tu puesto', ''), ...roles.map(role => new Option(role)));
   position.disabled = !modality;
   positionField.hidden = !modality;
@@ -249,7 +277,8 @@ function updateModality() {
   portfolioError.hidden = true;
   portfolioLink.removeAttribute('aria-invalid');
   photoGuidance.hidden = !modality;
-  photoGuidance.textContent = remote ? 'Foto de rostro' : 'Foto de cuerpo completo';
+  photoGuidance.textContent = 'No se aceptan fotos de DNI ni CV';
+  document.getElementById('photo-title').textContent = remote ? 'Foto (rostro)' : 'Foto (cuerpo completo)';
   photoExampleToggle.hidden = !modality;
   if (!photoExample.hidden) photoExampleToggle.click();
   photoExample.classList.toggle('portrait', remote);
