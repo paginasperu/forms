@@ -115,23 +115,69 @@ for (const input of document.querySelectorAll('[name="nombres"], [name="apellido
 }
 
 const whatsapp = document.querySelector('[name="whatsapp"]');
-whatsapp.addEventListener('input', () => {
-  const before = whatsapp.value;
-  const caret = whatsapp.selectionStart ?? before.length;
-  const digitsBeforeCaret = before.slice(0, caret).replace(/\D/g, '').length;
-  let raw = before.trim().replace(/^(?:\+51|0051)/, '');
-  const digits = raw.replace(/\D/g, '');
-  if (digits.length > 9 || /[^\d\s().-]/.test(raw)) return;
+function formatWhatsapp(value, caret = value.length) {
+  const digitsBeforeCaret = value.slice(0, caret).replace(/\D/g, '').length;
+  const digits = value.replace(/\D/g, '');
   const formatted = digits.replace(/(\d{3})(?=\d)/g, '$1 ');
   whatsapp.value = formatted;
-
   let position = 0;
-  let digitsSeen = 0;
-  while (position < formatted.length && digitsSeen < digitsBeforeCaret) {
-    if (/\d/.test(formatted[position])) digitsSeen++;
+  let seen = 0;
+  while (position < formatted.length && seen < digitsBeforeCaret) {
+    if (/\d/.test(formatted[position])) seen++;
     position++;
   }
   whatsapp.setSelectionRange(position, position);
+}
+
+function validateWhatsapp() {
+  const value = whatsapp.value;
+  const digits = value.replace(/\D/g, '');
+  const message = value && (!/^[\d ]+$/.test(value) || digits.length > 9 ||
+    (digits.length === 9 && !digits.startsWith('9')))
+    ? fieldMessages.whatsapp : '';
+  whatsapp.setCustomValidity(message);
+  showFieldError(whatsapp, message);
+}
+
+whatsapp.addEventListener('beforeinput', event => {
+  const start = whatsapp.selectionStart;
+  const end = whatsapp.selectionEnd;
+  if (event.inputType === 'insertText' && event.data) {
+    const next = whatsapp.value.slice(0, start) + event.data + whatsapp.value.slice(end);
+    const currentLength = whatsapp.value.replace(/\D/g, '').length;
+    const nextLength = next.replace(/\D/g, '').length;
+    if (/\D/.test(event.data) || (nextLength > 9 && nextLength >= currentLength)) event.preventDefault();
+  }
+  // Delete a digit across a grouping space instead of reinserting the space.
+  if (start === end && ((event.inputType === 'deleteContentBackward' && whatsapp.value[start - 1] === ' ') ||
+    (event.inputType === 'deleteContentForward' && whatsapp.value[start] === ' '))) {
+    event.preventDefault();
+    const from = event.inputType === 'deleteContentBackward' ? start - 2 : start;
+    const to = event.inputType === 'deleteContentBackward' ? start : start + 2;
+    const next = whatsapp.value.slice(0, from) + whatsapp.value.slice(to);
+    formatWhatsapp(next, from);
+    whatsapp.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+});
+
+whatsapp.addEventListener('paste', event => {
+  event.preventDefault();
+  const pasted = event.clipboardData.getData('text').trim();
+  const local = pasted.replace(/^(?:\+51|0051)\s*/, '');
+  const replacement = /^[\d\s().-]+$/.test(local) ? local.replace(/\D/g, '') : pasted;
+  whatsapp.setRangeText(replacement, whatsapp.selectionStart, whatsapp.selectionEnd, 'end');
+  whatsapp.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
+whatsapp.addEventListener('input', () => {
+  if (/^[\d ]*$/.test(whatsapp.value) && whatsapp.value.replace(/\D/g, '').length <= 9) {
+    formatWhatsapp(whatsapp.value, whatsapp.selectionStart ?? whatsapp.value.length);
+  }
+  validateWhatsapp();
+});
+whatsapp.addEventListener('blur', () => {
+  validateWhatsapp();
+  if (whatsapp.value && !whatsapp.validity.valid) showFieldError(whatsapp, fieldMessages.whatsapp);
 });
 
 const socialLink = document.querySelector('[name="red_social"]');
@@ -225,9 +271,11 @@ function showFieldError(input, message) {
 
 function clearFieldError(event) {
   const input = event.target;
+  if (input === whatsapp && input.validity.customError) return;
   if (document.getElementById(input.name + '-validation-error')) showFieldError(input, '');
 }
 
+applicationForm.addEventListener('reset', () => whatsapp.setCustomValidity(''));
 applicationForm.addEventListener('input', clearFieldError);
 applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
