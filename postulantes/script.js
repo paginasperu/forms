@@ -173,9 +173,11 @@ socialLink.addEventListener('blur', validateSocialLink);
 socialLink.addEventListener('input', () => socialLink.setCustomValidity(''));
 
 const presentation = document.querySelector('[name="presentacion"]');
-presentation.addEventListener('input', () => {
-  presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación.');
-});
+function validatePresentation() {
+  const length = presentation.value.trim().length;
+  presentation.setCustomValidity(length >= 40 && length <= 300 ? '' : 'Escribe entre 40 y 300 caracteres');
+}
+presentation.addEventListener('input', validatePresentation);
 
 const applicationForm = document.getElementById('application-form');
 const availabilityInputs = [...document.querySelectorAll('[name="horarios_disponibles"]')];
@@ -192,8 +194,8 @@ const fieldMessages = {
   ubicacion: 'Elige un distrito de las sugerencias',
   whatsapp: 'Ingresa un celular peruano de 9 dígitos que empiece en 9',
   red_social: 'Ingresa un enlace válido a tu perfil',
-  tarifa_hora: 'Ingresa un monto entero mayor que cero',
-  presentacion: 'Escribe una breve presentación',
+  tarifa_hora: 'Ingresa un monto entero entre S/10 y S/100',
+  presentacion: 'Escribe entre 40 y 300 caracteres',
   acepta_entrevista: 'Confirma que aceptas la entrevista',
   acepta_politica_privacidad: 'Acepta la política de privacidad'
 };
@@ -300,9 +302,9 @@ applicationForm.addEventListener('submit', async event => {
   const ubigeo = selectedLocationCode();
   locationInput.setCustomValidity(ubigeo ? '' : fieldMessages.ubicacion);
   validatePortfolioLink();
-  rate.setCustomValidity(!rate.value || Number.isSafeInteger(Number(rate.value)) ? '' : fieldMessages.tarifa_hora);
+  rate.setCustomValidity(!rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 10 && Number(rate.value) <= 100) ? '' : fieldMessages.tarifa_hora);
   validateSocialLink();
-  presentation.setCustomValidity(presentation.value.trim() ? '' : 'Escribe una breve presentación');
+  validatePresentation();
   let firstInvalid = null;
   for (const input of applicationForm.elements) {
     if (input === availabilityInputs[0] && !updateAvailabilityValidation(true)) firstInvalid ??= input;
@@ -487,9 +489,9 @@ function submitPayload(payload) {
         INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
         INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social.',
-        INVALID_HOURLY_RATE: 'Ingresa una tarifa por hora entera mayor que cero.',
+        INVALID_HOURLY_RATE: 'Ingresa una tarifa por hora entera entre S/10 y S/100.',
         INVALID_PORTFOLIO_LINK: 'Revisa el enlace de tu portafolio o déjalo vacío.',
-        INVALID_PRESENTATION: 'Completa tu presentación con un máximo de 300 caracteres.',
+        INVALID_PRESENTATION: 'Escribe una presentación de entre 40 y 300 caracteres.',
         AVAILABILITY_REQUIRED: 'Selecciona al menos un día y horario disponible.',
         INVALID_AVAILABILITY: 'No pudimos leer los horarios seleccionados. Vuelve a marcarlos.',
         REQUEST_MISSING: 'No se recibió el formulario completo. Recarga la página e inténtalo de nuevo.',
