@@ -233,8 +233,8 @@ applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
 
 const positionsByModality = {
-  Remoto: ['Asistente administrativo', 'Diseñador gráfico', 'Editor de video', 'Creador de contenido', 'Community Manager', 'Reclutador'],
-  Presencial: ['Volantera', 'Anfitriona', 'Encuestadora', 'Promotora']
+  Remoto: ['Promotor', 'Diseñador gráfico', 'Creador de contenido'],
+  Presencial: ['Volantera', 'Anfitriona', 'Promotora']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
 const positionField = document.getElementById('position-field');
