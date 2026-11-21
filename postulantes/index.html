@@ -43,8 +43,8 @@
       <fieldset class="position-fieldset" aria-describedby="modality-error">
         <legend>Modalidad</legend>
         <div class="modality-options">
-          <label class="position-option"><input type="radio" name="modalidad" value="Presencial" required><span>Presencial</span></label>
           <label class="position-option"><input type="radio" name="modalidad" value="Remoto" required><span>Remoto</span></label>
+          <label class="position-option"><input type="radio" name="modalidad" value="Presencial" required><span>Presencial</span></label>
         </div>
         <small class="field-hint field-error position-error" id="modality-error" aria-live="polite" hidden></small>
       </fieldset>
@@ -165,8 +165,9 @@
       <div class="personal-grid">
         <label class="text-field mobile-wide presentation-field">
           <span>Sobre ti</span>
-          <textarea name="presentacion" rows="3" minlength="40" maxlength="300" aria-describedby="presentation-help" required></textarea>
+          <textarea name="presentacion" rows="3" minlength="40" maxlength="300" aria-describedby="presentation-help presentation-counter" required></textarea>
           <small class="field-hint" id="presentation-help">Describe brevemente lo que te hace diferente</small>
+          <small class="field-hint" id="presentation-counter">0/300 · Mínimo 40 caracteres</small>
         </label>
         <label class="text-field mobile-wide">
           <span>Tarifa por hora (S/)</span>
@@ -278,6 +279,6 @@
     </nav>
   </footer>
   <script src="assets/locations.js?v=20261116"></script>
-  <script src="script.js?v=20261120-confirmacion"></script>
+  <script src="script.js?v=20261120-contador"></script>
 </body>
 </html>

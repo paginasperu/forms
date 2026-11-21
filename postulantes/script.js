@@ -14,7 +14,7 @@ const fileRules = {
 // Se activa cuando se publique la Web App de Apps Script.
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwBQhixsXAoqT7UpwAwxFMgf_PmM4RPvQhe3SG2XmDsNv_IGBfNjXgkZ4kr2741rFMA/exec';
 const formStartedAt = Date.now();
-const submissionId = crypto.randomUUID();
+let submissionId = crypto.randomUUID();
 
 function hasAsciiSequence(bytes, text) {
   const sequence = [...text].map(character => character.charCodeAt(0));
@@ -226,7 +226,19 @@ function validatePresentation() {
   const length = presentation.value.trim().length;
   presentation.setCustomValidity(length >= 40 && length <= 300 ? '' : 'Escribe entre 40 y 300 caracteres');
 }
-presentation.addEventListener('input', validatePresentation);
+const presentationCounter = document.getElementById('presentation-counter');
+function updatePresentationCounter() {
+  const length = presentation.value.trim().length;
+  presentationCounter.textContent = length + '/300' + (length < 40 ? ' · Mínimo 40 caracteres' : '');
+}
+presentation.addEventListener('input', () => {
+  validatePresentation();
+  updatePresentationCounter();
+});
+presentation.form.addEventListener('reset', () => {
+  queueMicrotask(updatePresentationCounter);
+});
+updatePresentationCounter();
 
 const applicationForm = document.getElementById('application-form');
 const availabilityInputs = [...document.querySelectorAll('[name="horarios_disponibles"]')];
@@ -442,7 +454,7 @@ applicationForm.addEventListener('submit', async event => {
   submitButton.disabled = true;
   submitButton.setAttribute('aria-busy', 'true');
   submitButton.textContent = 'Enviando…';
-  status.textContent = 'Enviando tu postulación…';
+  status.textContent = 'Enviando tu postulación… No cierres ni recargues esta página hasta ver la confirmación';
 
   try {
     const payload = {
@@ -539,6 +551,7 @@ function submitPayload(payload) {
     completed = true;
     cleanup();
     if (message.ok) {
+      submissionId = crypto.randomUUID();
       applicationForm.reset();
       socialLink.setCustomValidity('');
       birthParts.forEach(input => { input.setCustomValidity(''); input.removeAttribute('aria-invalid'); });
@@ -608,7 +621,7 @@ function submitPayload(payload) {
   }
 
   window.addEventListener('message', onMessage);
-  status.textContent = 'Enviando tu postulación…';
+  status.textContent = 'Enviando tu postulación… No cierres ni recargues esta página hasta ver la confirmación';
   submitButton.textContent = 'Enviando…';
   outboundForm.submit();
 }
