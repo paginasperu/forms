@@ -293,7 +293,7 @@ applicationForm.addEventListener('change', clearFieldError);
 applicationForm.noValidate = true;
 
 const positionsByModality = {
-  Remoto: ['Promotor', 'Diseñador gráfico', 'Creador de contenido'],
+  Remoto: ['Promotora virtual', 'Diseñador gráfico', 'Creador de contenido'],
   Presencial: ['Volantera', 'Anfitriona', 'Promotora']
 };
 const modalityInputs = [...document.querySelectorAll('[name="modalidad"]')];
