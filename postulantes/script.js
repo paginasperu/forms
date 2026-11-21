@@ -271,7 +271,7 @@ function showFieldError(input, message) {
 
 function clearFieldError(event) {
   const input = event.target;
-  if (input === whatsapp && input.validity.customError) return;
+  if ((input === whatsapp || input.name === 'tarifa_hora') && input.validity.customError) return;
   if (document.getElementById(input.name + '-validation-error')) showFieldError(input, '');
 }
 
@@ -354,14 +354,24 @@ availabilityInputs.forEach(input => {
 const rate = applicationForm.elements.tarifa_hora;
 const rateDigits = /^[0-9]*$/;
 let lastRateValue = rate.value;
+function validateRate() {
+  const valid = !rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 10 && Number(rate.value) <= 100);
+  rate.setCustomValidity(valid ? '' : fieldMessages.tarifa_hora);
+  showFieldError(rate, valid ? '' : fieldMessages.tarifa_hora);
+}
 rate.addEventListener('beforeinput', event => {
-  if (event.data && !rateDigits.test(event.data)) event.preventDefault();
+  if (event.inputType !== 'insertText' || !event.data) return;
+  const next = rate.value.slice(0, rate.selectionStart) + event.data + rate.value.slice(rate.selectionEnd);
+  if (!rateDigits.test(event.data) || ((next.length > 3 || Number(next) > 100) && next.length >= rate.value.length)) event.preventDefault();
 });
 rate.addEventListener('input', () => {
   if (rateDigits.test(rate.value)) lastRateValue = rate.value;
   else rate.value = lastRateValue;
-  rate.setCustomValidity('');
+  // A single digit may still be the beginning of a valid amount.
+  if (Number(rate.value) > 100 || document.activeElement !== rate) validateRate();
+  else { rate.setCustomValidity(''); showFieldError(rate, ''); }
 });
+rate.addEventListener('blur', validateRate);
 applicationForm.addEventListener('reset', () => {
   lastRateValue = rate.defaultValue;
   rate.setCustomValidity('');
@@ -542,6 +552,8 @@ function submitPayload(payload) {
       updateAvailabilityValidation(false);
       status.textContent = 'Tu postulación fue recibida. Gracias por tu interés.';
       status.classList.add('success');
+      status.hidden = false;
+      status.scrollIntoView({ block: 'center', behavior: 'smooth' });
       submitButton.textContent = 'Postulación enviada';
     } else {
       const errorMessages = {
