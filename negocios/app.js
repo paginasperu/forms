@@ -44,7 +44,7 @@ function restoreRepeated(){
 }
 repeatNames.forEach(name=>form.elements[name].addEventListener('input',()=>{markRepeated(name,false);persistRepeated();}));
 function render(){editor.hidden=!!active;summary.hidden=!active;details.hidden=!active;details.disabled=!active;document.getElementById('location-prompt').hidden=!!active;if(active)document.getElementById('location-display').textContent=active.type+' · '+active.name;}
-function fieldError(input,message){input.setCustomValidity(message);input.toggleAttribute('aria-invalid',!!message);const id='error-'+input.name;let node=document.getElementById(id);if(!node){node=document.createElement('small');node.id=id;node.className='field-error';input.closest('label').append(node);input.setAttribute('aria-describedby',id);}node.textContent=message;node.hidden=!message;}
+function fieldError(input,message){input.setCustomValidity(message);input.toggleAttribute('aria-invalid',!!message);const id='error-'+input.name;let node=document.getElementById(id);if(!node){node=document.createElement('small');node.id=id;node.className='field-error';(input.closest('label')||input.closest('.text-field')).append(node);input.setAttribute('aria-describedby',id);}node.textContent=message;node.hidden=!message;}
 document.getElementById('save-location').onclick=()=>{const name=placeName.value.trim().replace(/\s+/g,' ');if(!allowed.includes(placeType.value)||businessFieldMessage('lugar',placeName.value)){locationError.textContent=!allowed.includes(placeType.value)?'Selecciona el tipo de lugar':businessFieldMessage('lugar',placeName.value);locationError.hidden=false;(!placeType.value?placeType:placeName).focus();return;}const changed=active&&(active.type!==placeType.value||active.name!==name);active={type:placeType.value,name};try{localStorage.setItem(storageKey,JSON.stringify(active));}catch{}if(changed){repeatNames.forEach(key=>{form.elements[key].value='';markRepeated(key,false);fieldError(form.elements[key],'');});persistRepeated();}locationError.hidden=true;render();};
 document.getElementById('change-location').onclick=()=>{placeType.value=active.type;placeName.value=active.name;editor.hidden=false;summary.hidden=true;details.disabled=true;document.getElementById('cancel-location').hidden=false;placeType.focus();};
 document.getElementById('cancel-location').onclick=()=>{locationError.hidden=true;render();};
@@ -54,8 +54,26 @@ phone.addEventListener('paste',e=>{e.preventDefault();const text=e.clipboardData
 function validatePhone(final=false){const raw=phone.value;const digits=raw.replace(/ /g,'');if(/^[\d ]*$/.test(raw)&&digits.length<=9)phone.value=digits.replace(/(\d{3})(?=\d)/g,'$1 ');const invalid=raw&&(!/^[\d ]+$/.test(raw)||digits.length>9||(final&&(!/^9\d{8}$/.test(digits)))||(digits.length===9&&!digits.startsWith('9')));fieldError(phone,invalid?'Ingresa un celular peruano de 9 dígitos que empiece en 9':'');}
 phone.addEventListener('input',()=>validatePhone());phone.addEventListener('blur',()=>validatePhone(true));
 const social=form.elements.red_social;
-function validateSocial(){const text=social.value.trim();let candidate=text;if(text&&!/^https?:\/\//i.test(text))candidate='https://'+text;let valid=!text;try{const u=new URL(candidate);valid=businessSocialValid(candidate)&&!u.username&&!u.password;}catch{}if(valid)social.value=text?candidate:'';fieldError(social,valid?'':'Ingresa un enlace válido al perfil del negocio');}
-social.addEventListener('blur',validateSocial);social.addEventListener('input',()=>fieldError(social,''));
+const socialNetwork=document.getElementById('social-network');
+const socialIcons={
+ instagram:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+ facebook:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14.1 22v-9h3l.5-3.5h-3.5V7.3c0-1 .3-1.7 1.8-1.7h1.9V2.5c-.4 0-1.5-.2-2.8-.2-2.8 0-4.6 1.7-4.6 4.8v2.4H7.3V13h3.1v9z"/></svg>',
+ tiktok:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2h3c.2 2.6 1.7 4.2 4 4.5v3c-1.5 0-2.9-.5-4-1.3v7.6a6.2 6.2 0 1 1-7-6.1v3.1a3.1 3.1 0 1 0 4 3z"/></svg>'
+};
+function updateSocialPrefix(){const symbol=document.getElementById('social-symbol');symbol.innerHTML=socialIcons[socialNetwork.value]||'<span class="social-question">?</span>';symbol.parentElement.title=socialNetwork.selectedOptions[0].textContent;symbol.parentElement.classList.toggle('is-empty',!socialNetwork.value);}
+socialNetwork.addEventListener('change',updateSocialPrefix);
+form.addEventListener('reset',()=>queueMicrotask(updateSocialPrefix));
+updateSocialPrefix();
+
+function validateSocial(){
+ const result=parseBusinessSocial(socialNetwork.value,social.value);
+ if(!result.error){socialNetwork.value=result.network;updateSocialPrefix();social.value=result.user;}
+ fieldError(social,result.error);
+ return result.url;
+}
+social.addEventListener('blur',validateSocial);
+social.addEventListener('input',()=>{if(social.value.startsWith('@')){social.value=social.value.replace(/^@+/,'');}fieldError(social,'');});
+socialNetwork.addEventListener('change',()=>{if(social.value)validateSocial();});
 form.addEventListener('submit',async e=>{
  e.preventDefault();if(sending||!active||!editor.hidden)return;
  validatePhone(true);validateSocial();let first=null;
@@ -63,7 +81,7 @@ form.addEventListener('submit',async e=>{
  if(!phone.validity.valid)first??=phone;if(!social.validity.valid)first??=social;if(first){first.focus();return;}
  const values=Object.fromEntries([...form.elements].filter(input=>input.name&&!input.disabled).map(input=>[input.name,input.value]));
  if(businessFieldMessage('lugar',active.name)){document.getElementById('change-location').click();return;}
- const fields={...values,tipo_lugar:active.type,lugar:active.name};
+ const fields={...values,red_social:parseBusinessSocial(socialNetwork.value,social.value).url,tipo_lugar:active.type,lugar:active.name};
  const signature=JSON.stringify(fields);if(lastPayload&&lastPayload!==signature)requestId=crypto.randomUUID();lastPayload=signature;
  const payload={...fields,id:requestId,origin:location.origin,form_note:''};
  const retained=repeatNames.map(k=>form.elements[k].value);
