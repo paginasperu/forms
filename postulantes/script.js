@@ -29,11 +29,13 @@ async function fileValidationError(field, file) {
   const label = field === 'cv' ? 'El CV' : 'La foto';
   if (!file || file.size === 0) return `${label} no contiene datos. Selecciona otro archivo`;
   if (file.size > rule.maxBytes) return `${label} pesa ${(file.size / 1024 / 1024).toFixed(2)} MB. El máximo es ${rule.maxBytes / 1024 / 1024} MB`;
-  const extension = file.name.split('.').pop().toLowerCase();
+  const dot = file.name.lastIndexOf('.');
+  const extension = dot > 0 ? file.name.slice(dot + 1).toLowerCase() : '';
+  const guidance = field === 'cv' ? 'Sube tu CV en PDF o DOCX.' : 'Sube tu foto en JPG, JPEG, JFIF o PNG.';
+  if (!extension) return `El archivo no tiene extensión. ${guidance}`;
   if (!rule.extensions.includes(extension)) {
-    return field === 'cv'
-      ? 'Formato no admitido. El CV debe ser PDF o DOCX; no se aceptan archivos DOC ni imágenes'
-      : 'Formato no admitido. Usa una foto JPG, JPEG, JFIF o PNG';
+    const format = /^[a-z0-9]{1,16}$/.test(extension) ? `El formato .${extension} no se admite.` : 'Formato no admitido.';
+    return `${format} ${guidance}`;
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (field === 'cv') {
@@ -55,7 +57,7 @@ async function fileValidationError(field, file) {
   const isPng = bytes.length >= 33 && pngStart.every((value, i) => bytes[i] === value) &&
     pngEnd.every((value, i) => bytes[bytes.length - pngEnd.length + i] === value);
   if ((extension === 'png' && isPng) || (['jpg', 'jpeg', 'jfif'].includes(extension) && isJpeg)) return '';
-  return 'El contenido de la foto no coincide con su extensión o está incompleto. Selecciona otra foto o expórtala como JPEG o PNG';
+  return 'No pudimos reconocer el archivo como una imagen válida. Elige otra foto.';
 }
 
 function fileStatus(field) {
