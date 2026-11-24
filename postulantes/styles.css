@@ -272,3 +272,14 @@ h3 { margin-bottom: 4px; font: 700 15px/1.3 'Manrope', sans-serif; }
 .application-details[hidden] { display: none; }
 .modality-prompt { margin: 0; padding: 0 8px; color: #4f596a; font-size: 13px; text-align: center; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* Campos de fecha proporcionados y controles de archivo de ancho completo. */
+.birthdate-parts { grid-template-columns: minmax(54px, 1fr) minmax(96px, 1.25fr) minmax(70px, 1fr); gap: 8px; }
+.upload-card:not(.photo-upload-card) { grid-template-columns: 34px minmax(0, 1fr); grid-template-rows: 34px auto auto auto; }
+.upload-card:not(.photo-upload-card) .file-picker { grid-column: 1 / -1; grid-row: 2; min-height: 38px; }
+.upload-card:not(.photo-upload-card) .file-hint { grid-row: 3; }
+.upload-card:not(.photo-upload-card) .file-status { grid-row: 4; }
+.upload-card > .field-error { grid-column: 1 / -1; justify-self: stretch; max-width: none; margin: 0; line-height: 1.4; }
+@media (max-width: 359px) {
+  .birthdate-parts { grid-template-columns: 52px minmax(86px, 1fr) 68px; gap: 6px; }
+}

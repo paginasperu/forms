@@ -411,7 +411,7 @@ applicationForm.addEventListener('submit', async event => {
       error.hidden = false;
       continue;
     }
-    if (input === portfolioLink || (birthParts.includes(input) && input.validity.customError)) continue;
+    if (input === portfolioLink || birthParts.includes(input)) continue;
     let message = fieldMessages[input.name] || input.validationMessage;
     if (!input.validity.valueMissing && (input.name === 'nombres' || input.name === 'apellidos')) {
       message = 'Usa entre 2 y 80 caracteres: letras, espacios o guiones';
