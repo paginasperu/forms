@@ -257,7 +257,7 @@ const fieldMessages = {
   ubicacion: 'Elige un distrito de las sugerencias',
   whatsapp: 'Ingresa un celular peruano de 9 dígitos que empiece en 9',
   red_social: 'Ingresa un enlace válido a tu perfil',
-  tarifa_hora: 'Ingresa un monto entero entre S/10 y S/100',
+  monto_mensual: 'Ingresa un monto mensual en soles enteros',
   presentacion: 'Escribe entre 40 y 300 caracteres',
   acepta_entrevista: 'Confirma que aceptas la entrevista',
   acepta_politica_privacidad: 'Acepta la política de privacidad'
@@ -285,7 +285,7 @@ function showFieldError(input, message) {
 
 function clearFieldError(event) {
   const input = event.target;
-  if ((input === whatsapp || input.name === 'tarifa_hora') && input.validity.customError) return;
+  if ((input === whatsapp || input.name === 'monto_mensual') && input.validity.customError) return;
   if (document.getElementById(input.name + '-validation-error')) showFieldError(input, '');
 }
 
@@ -365,24 +365,23 @@ availabilityInputs.forEach(input => {
   });
 });
 
-const rate = applicationForm.elements.tarifa_hora;
+const rate = applicationForm.elements.monto_mensual;
 const rateDigits = /^[0-9]*$/;
 let lastRateValue = rate.value;
 function validateRate() {
-  const valid = !rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 10 && Number(rate.value) <= 100);
-  rate.setCustomValidity(valid ? '' : fieldMessages.tarifa_hora);
-  showFieldError(rate, valid ? '' : fieldMessages.tarifa_hora);
+  const valid = !rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 0);
+  rate.setCustomValidity(valid ? '' : fieldMessages.monto_mensual);
+  showFieldError(rate, valid ? '' : fieldMessages.monto_mensual);
 }
 rate.addEventListener('beforeinput', event => {
   if (event.inputType !== 'insertText' || !event.data) return;
-  const next = rate.value.slice(0, rate.selectionStart) + event.data + rate.value.slice(rate.selectionEnd);
-  if (!rateDigits.test(event.data) || ((next.length > 3 || Number(next) > 100) && next.length >= rate.value.length)) event.preventDefault();
+  if (!rateDigits.test(event.data)) event.preventDefault();
 });
 rate.addEventListener('input', () => {
   if (rateDigits.test(rate.value)) lastRateValue = rate.value;
   else rate.value = lastRateValue;
   // A single digit may still be the beginning of a valid amount.
-  if (Number(rate.value) > 100 || document.activeElement !== rate) validateRate();
+  if (document.activeElement !== rate) validateRate();
   else { rate.setCustomValidity(''); showFieldError(rate, ''); }
 });
 rate.addEventListener('blur', validateRate);
@@ -397,7 +396,7 @@ applicationForm.addEventListener('submit', async event => {
   const ubigeo = selectedLocationCode();
   locationInput.setCustomValidity(ubigeo ? '' : fieldMessages.ubicacion);
   validatePortfolioLink();
-  rate.setCustomValidity(!rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 10 && Number(rate.value) <= 100) ? '' : fieldMessages.tarifa_hora);
+  rate.setCustomValidity(!rate.value || (Number.isSafeInteger(Number(rate.value)) && Number(rate.value) >= 0) ? '' : fieldMessages.monto_mensual);
   validateSocialLink();
   validatePresentation();
   let firstInvalid = null;
@@ -474,7 +473,7 @@ applicationForm.addEventListener('submit', async event => {
       whatsapp: applicationForm.elements.whatsapp.value,
       portafolio: applicationForm.elements.portafolio.value.trim(),
       red_social: socialLink.value,
-      tarifa_hora: Number(rate.value),
+      monto_mensual: Number(rate.value),
       presentacion: applicationForm.elements.presentacion.value.trim(),
       horarios_disponibles: availabilityInputs.filter(input => input.checked).map(input => input.value),
       acepta_entrevista: applicationForm.elements.acepta_entrevista.checked,
@@ -587,7 +586,7 @@ function submitPayload(payload) {
         INVALID_POSITION: 'Selecciona un puesto de la modalidad elegida.',
         INVALID_WHATSAPP: 'Revisa el celular: debe tener 9 dígitos y empezar con 9.',
         INVALID_SOCIAL_LINK: 'Revisa el enlace de tu red social.',
-        INVALID_HOURLY_RATE: 'Ingresa una tarifa por hora entera entre S/10 y S/100.',
+        INVALID_MONTHLY_AMOUNT: 'Ingresa un monto mensual en soles enteros.',
         INVALID_PORTFOLIO_LINK: 'Revisa el enlace de tu portafolio o déjalo vacío.',
         INVALID_PRESENTATION: 'Escribe una presentación de entre 40 y 300 caracteres.',
         AVAILABILITY_REQUIRED: 'Selecciona al menos un día y horario disponible.',
