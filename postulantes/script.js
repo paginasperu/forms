@@ -7,7 +7,7 @@ const fileRules = {
   foto: {
     maxBytes: 2 * 1024 * 1024,
     extensions: ['jpg', 'jpeg', 'jfif', 'png'],
-    message: 'La foto debe ser JPG, JPEG o PNG y pesar hasta 2 MB.'
+    message: 'La foto debe ser JPG, JPEG, JFIF o PNG y pesar hasta 2 MB.'
   }
 };
 
@@ -22,6 +22,56 @@ function hasAsciiSequence(bytes, text) {
     if (sequence.every((value, offset) => bytes[i + offset] === value)) return true;
   }
   return false;
+}
+
+const preparedPhotos = new WeakMap();
+const photoReadError = 'No pudimos abrir esta foto. Selecciona otra.';
+
+function preparePhoto(file, bytes, extension) {
+  if (!preparedPhotos.has(file)) {
+    preparedPhotos.set(file, decodePhoto(file, bytes, extension));
+  }
+  return preparedPhotos.get(file);
+}
+
+async function decodePhoto(file, bytes, extension) {
+  const jpeg = bytes.length >= 5 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+  const pngStart = [137, 80, 78, 71, 13, 10, 26, 10];
+  const pngEnd = [0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130];
+  const png = bytes.length >= 33 && pngStart.every((value, i) => bytes[i] === value);
+  if (!(extension === 'png' ? png : jpeg)) throw new Error(photoReadError);
+
+  const url = URL.createObjectURL(file.slice(0, file.size, jpeg ? 'image/jpeg' : 'image/png'));
+  try {
+    const photo = new Image();
+    photo.src = url;
+    await photo.decode();
+
+    const originalCompatible = jpeg
+      ? bytes[bytes.length - 2] === 255 && bytes[bytes.length - 1] === 217
+      : pngEnd.every((value, i) => bytes[bytes.length - pngEnd.length + i] === value);
+    if (originalCompatible) return file;
+
+    const canvas = document.createElement('canvas');
+    const longestSide = Math.max(photo.naturalWidth, photo.naturalHeight);
+    const context = canvas.getContext('2d', { alpha: false });
+    if (!context || !longestSide) throw new Error(photoReadError);
+    for (let maxSide = 2048; maxSide >= 256; maxSide /= 2) {
+      const scale = Math.min(1, maxSide / longestSide);
+      canvas.width = Math.max(1, Math.round(photo.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(photo.naturalHeight * scale));
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(photo, 0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+      if (blob?.type === 'image/jpeg' && blob.size > 0 && blob.size <= fileRules.foto.maxBytes) {
+        return new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+      }
+    }
+    throw new Error(photoReadError);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 async function fileValidationError(field, file) {
@@ -50,14 +100,12 @@ async function fileValidationError(field, file) {
     if (isZip && hasAsciiSequence(bytes, '[Content_Types].xml') && hasAsciiSequence(bytes, 'word/document.xml')) return '';
     return 'El contenido del archivo no corresponde a un DOCX válido. Selecciona un documento de Word válido';
   }
-  const isJpeg = bytes.length >= 5 && bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 &&
-    bytes[bytes.length - 2] === 255 && bytes[bytes.length - 1] === 217;
-  const pngStart = [137, 80, 78, 71, 13, 10, 26, 10];
-  const pngEnd = [0, 0, 0, 0, 73, 69, 78, 68, 174, 66, 96, 130];
-  const isPng = bytes.length >= 33 && pngStart.every((value, i) => bytes[i] === value) &&
-    pngEnd.every((value, i) => bytes[bytes.length - pngEnd.length + i] === value);
-  if ((extension === 'png' && isPng) || (['jpg', 'jpeg', 'jfif'].includes(extension) && isJpeg)) return '';
-  return 'No pudimos reconocer el archivo como una imagen válida. Elige otra foto.';
+  try {
+    await preparePhoto(file, bytes, extension);
+    return '';
+  } catch (_) {
+    return photoReadError;
+  }
 }
 
 function fileStatus(field) {
@@ -435,10 +483,13 @@ applicationForm.addEventListener('submit', async event => {
     return;
   }
 
+  const selectedFiles = {};
   for (const field of Object.keys(fileRules)) {
     const input = applicationForm.elements[field];
+    const file = input.files[0];
+    selectedFiles[field] = file;
     let error;
-    try { error = await fileValidationError(field, input.files[0]); }
+    try { error = await fileValidationError(field, file); }
     catch (_) { error = 'No se pudo leer el archivo. Vuelve a seleccionarlo'; }
     if (error) {
       const item = fileStatus(field);
@@ -452,6 +503,11 @@ applicationForm.addEventListener('submit', async event => {
     }
   }
 
+  if (submitButton.disabled) return;
+  if (Object.keys(selectedFiles).some(field => applicationForm.elements[field].files[0] !== selectedFiles[field])) {
+    status.textContent = 'Cambiaste un archivo. Pulsa Enviar postulación de nuevo.';
+    return;
+  }
   submitButton.disabled = true;
   submitButton.setAttribute('aria-busy', 'true');
   submitButton.textContent = 'Enviando…';
@@ -479,8 +535,8 @@ applicationForm.addEventListener('submit', async event => {
       acepta_entrevista: applicationForm.elements.acepta_entrevista.checked,
       acepta_politica_privacidad: applicationForm.elements.acepta_politica_privacidad.checked,
       files: {
-        cv: await fileAsBase64(applicationForm.elements.cv.files[0]),
-        foto: await fileAsBase64(applicationForm.elements.foto.files[0])
+        cv: await fileAsBase64(selectedFiles.cv),
+        foto: await fileAsBase64(await preparedPhotos.get(selectedFiles.foto))
       }
     };
     submitPayload(payload);
